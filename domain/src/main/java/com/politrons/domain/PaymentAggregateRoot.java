@@ -1,17 +1,20 @@
 package com.politrons.domain;
 
 import com.politrons.domain.entities.PaymentInfo;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PaymentAgreegateRoot {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PaymentAggregateRoot {
 
-    private String type;
     private String id;
+    private String type;
     private float version;
-    private String organisation_id;
     PaymentInfo paymentInfo;
 
 }
