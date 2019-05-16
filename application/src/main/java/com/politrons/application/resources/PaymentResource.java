@@ -1,11 +1,15 @@
 package com.politrons.application.resources;
 
 import com.politrons.application.handler.PaymentHandler;
+import com.politrons.application.model.TestJson;
 import com.politrons.application.service.PaymentService;
+import com.politrons.domain.entities.PaymentInfo;
+import org.jboss.resteasy.annotations.Body;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @Path("/payment")
@@ -39,16 +43,20 @@ public class PaymentResource {
     }
 
     @POST
-    public CompletionStage<String> createPayment() {
-        return null;
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/test")
+    public CompletionStage<String> createPayment(TestJson info) {
+        return CompletableFuture.supplyAsync(() -> "1981");
     }
 
     @PUT
+    @Path("/")
     public CompletionStage<String> updatePayment() {
         return null;
     }
 
     @DELETE
+    @Path("/")
     public CompletionStage<String> deletePayment() {
         return null;
     }
