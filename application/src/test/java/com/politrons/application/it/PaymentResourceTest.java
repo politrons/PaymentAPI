@@ -1,4 +1,4 @@
-package com.politrons.application;
+package com.politrons.application.it;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
@@ -12,10 +12,10 @@ public class PaymentResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/info")
+          .when().get("/payment/version")
           .then()
              .statusCode(200)
-             .body(is("Version 1.0 of Quarkus in Politrons system"));
+             .body(is("Payment API V1.0"));
     }
 
 }

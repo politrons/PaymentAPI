@@ -1,5 +1,6 @@
 package com.politrons.application;
 
+import com.politrons.application.it.PaymentResourceTest;
 import io.quarkus.test.junit.SubstrateTest;
 
 @SubstrateTest

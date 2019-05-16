@@ -1,9 +1,9 @@
-package com.politrons.application;
+package com.politrons.application.unit;
 
 import com.politrons.application.service.impl.PaymentServiceImpl;
 import org.junit.jupiter.api.Test;
 
-public class ServiceTest {
+public class PaymentServiceTest {
 
     @Test
     public void testService(){

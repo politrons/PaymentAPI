@@ -1,4 +1,4 @@
-package com.politrons.application.resource;
+package com.politrons.application.resources;
 
 import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
