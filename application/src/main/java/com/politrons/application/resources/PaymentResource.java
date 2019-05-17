@@ -28,7 +28,7 @@ public class PaymentResource {
     @GET
     @Path("/version")
     public String version() {
-        logger.info("Request to Version endpoint");
+        logger.debug("Request to Version endpoint");
         return "Payment API V1.0";
     }
 
@@ -36,14 +36,14 @@ public class PaymentResource {
     @GET
     @Path("/{paymentId}")
     public CompletionStage<String> getPaymentById(@PathParam("paymentId") String id) {
-        logger.info("Request to get Payment with id " + id);
+        logger.debug("Request to get Payment with id " + id);
         return service.getUserAsync(Long.valueOf(id));
     }
 
     @GET
     @Path("/all")
     public CompletionStage<String> getAllPayment() {
-        logger.info("Request to get all Payment for user id ");
+        logger.debug("Request to get all Payment for user id ");
         return null;
     }
 

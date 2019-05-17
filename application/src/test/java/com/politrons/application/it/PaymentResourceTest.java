@@ -1,8 +1,6 @@
 package com.politrons.application.it;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.politrons.application.JsonUtils;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
