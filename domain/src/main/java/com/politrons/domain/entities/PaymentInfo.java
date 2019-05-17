@@ -14,13 +14,31 @@ public class PaymentInfo {
     private String amount;
     private String currency;
     private String paymentId;
-    DebtorParty debtorParty;
-    SponsorParty sponsorParty;
-    BeneficiaryParty beneficiaryParty;
     private String paymentPurpose;
     private String paymentType;
     private String processingDate;
     private String reference;
     private String schemePaymentSubType;
     private String schemePaymentType;
+    DebtorParty debtorParty;
+    SponsorParty sponsorParty;
+    BeneficiaryParty beneficiaryParty;
+
+    static PaymentInfo create(String amount,
+                              String currency,
+                              String paymentId,
+                              String paymentPurpose,
+                              String paymentType,
+                              String processingDate,
+                              String reference,
+                              String schemePaymentSubType,
+                              String schemePaymentType,
+                              DebtorParty debtorParty,
+                              SponsorParty sponsorParty,
+                              BeneficiaryParty beneficiaryParty) {
+        return new PaymentInfo(amount, currency, paymentId, paymentPurpose,
+                paymentType, processingDate, reference, schemePaymentSubType,
+                schemePaymentType, debtorParty, sponsorParty, beneficiaryParty);
+
+    }
 }

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EntitiesTest {
+class EntitiesTest {
 
 
     ObjectMapper mapper = new ObjectMapper();
@@ -35,17 +35,61 @@ public class EntitiesTest {
         assertNotNull(paymentInfo);
     }
 
-    private PaymentInfo getPaymentInfo() {
-        DebtorParty debtorParty = new DebtorParty("accountName", "accountNumber",
+    @Test
+    void debtorPartyFactory() {
+        DebtorParty debtorParty = DebtorParty.create("accountName", "accountNumber",
                 0, "address", "bankId", "name");
-        BeneficiaryParty beneficiaryParty = new BeneficiaryParty("accountName",
+        assertNotNull(debtorParty);
+    }
+
+    @Test
+    void beneficiaryPartyFactory() {
+        BeneficiaryParty beneficiaryParty = BeneficiaryParty.create("accountName",
                 "accountNumber", 0, "address", "bankId", "name");
-        SponsorParty sponsorParty = new SponsorParty("accountName",
+        assertNotNull(beneficiaryParty);
+
+    }
+
+    @Test
+    void sponsorPartyFactory() {
+        SponsorParty sponsorParty = SponsorParty.create("accountName",
                 "bankId", "bankCode");
-        return new PaymentInfo("amount", "currency",
-                "paymentId", debtorParty, sponsorParty, beneficiaryParty,
+        assertNotNull(sponsorParty);
+    }
+
+    @Test
+    void paymentInfoFactory() {
+        PaymentInfo paymentInfo = PaymentInfo.create("amount", "currency",
+                "paymentId",
                 "paymentPurpose", "paymentType",
                 "processingDate", "reference", "schemePaymentSubType",
-                "schemePaymentType");
+                "schemePaymentType", getDebtorParty(), getSponsorParty(), getBeneficiaryParty());
+        assertNotNull(paymentInfo);
+    }
+
+    private PaymentInfo getPaymentInfo() {
+        DebtorParty debtorParty = getDebtorParty();
+        BeneficiaryParty beneficiaryParty = getBeneficiaryParty();
+        SponsorParty sponsorParty = getSponsorParty();
+        return new PaymentInfo("amount", "currency",
+                "paymentId",
+                "paymentPurpose", "paymentType",
+                "processingDate", "reference", "schemePaymentSubType",
+                "schemePaymentType", debtorParty, sponsorParty, beneficiaryParty);
+    }
+
+    private SponsorParty getSponsorParty() {
+        return new SponsorParty("accountName",
+                "bankId", "bankCode");
+    }
+
+    private BeneficiaryParty getBeneficiaryParty() {
+        return new BeneficiaryParty("accountName",
+                "accountNumber", 0, "address", "bankId", "name");
+    }
+
+    private DebtorParty getDebtorParty() {
+        return new DebtorParty("accountName", "accountNumber",
+                0, "address", "bankId", "name");
     }
 }

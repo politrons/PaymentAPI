@@ -17,4 +17,15 @@ public class PaymentAggregateRoot {
     private float version;
     PaymentInfo paymentInfo;
 
+    public static void create(PaymentInfo paymentInfo) {
+
+
+    }
+
+    public static void update(String id, PaymentInfo paymentInfo) {
+
+
+    }
+
+
 }
