@@ -24,7 +24,8 @@ public class PaymentAggregateRoot {
     PaymentInfo paymentInfo;
 
     public static PaymentAggregateRoot create(PaymentInfo paymentInfo) {
-        return new PaymentAggregateRoot(UUID.randomUUID().toString(), "payment", 0, paymentInfo);
+        String id = UUID.randomUUID().toString();
+        return new PaymentAggregateRoot(id, "payment", 0, paymentInfo);
     }
 
     public static void update(String id, PaymentInfo paymentInfo) {

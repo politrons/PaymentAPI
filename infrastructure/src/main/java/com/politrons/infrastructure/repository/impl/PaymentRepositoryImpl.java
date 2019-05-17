@@ -1,12 +1,11 @@
 package com.politrons.infrastructure.repository.impl;
 
 import com.politrons.domain.PaymentAggregateRoot;
-import com.politrons.domain.repository.PaymentRepository;
+import com.politrons.infrastructure.repository.PaymentRepository;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;

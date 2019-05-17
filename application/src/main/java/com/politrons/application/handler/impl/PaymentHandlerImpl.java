@@ -8,7 +8,7 @@ import com.politrons.domain.entities.BeneficiaryParty;
 import com.politrons.domain.entities.DebtorParty;
 import com.politrons.domain.entities.PaymentInfo;
 import com.politrons.domain.entities.SponsorParty;
-import com.politrons.domain.repository.PaymentRepository;
+import com.politrons.infrastructure.repository.PaymentRepository;
 import io.vavr.API;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;

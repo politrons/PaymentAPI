@@ -1,4 +1,4 @@
-package com.politrons.domain.repository;
+package com.politrons.infrastructure.repository;
 
 import com.politrons.domain.PaymentAggregateRoot;
 import io.vavr.concurrent.Future;
