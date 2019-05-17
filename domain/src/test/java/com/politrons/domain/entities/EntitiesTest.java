@@ -11,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EntitiesTest {
 
-
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void createPaymentAggregateRoot() {

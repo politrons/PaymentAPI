@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 import static io.vavr.API.Right;
 
 @Getter
@@ -21,8 +23,8 @@ public class PaymentAggregateRoot {
     private float version;
     PaymentInfo paymentInfo;
 
-    public static Future<Either<Throwable, String>> create(PaymentInfo paymentInfo) {
-        return Future.of(() -> Right("1981"));
+    public static PaymentAggregateRoot create(PaymentInfo paymentInfo) {
+        return new PaymentAggregateRoot(UUID.randomUUID().toString(), "payment", 0, paymentInfo);
     }
 
     public static void update(String id, PaymentInfo paymentInfo) {

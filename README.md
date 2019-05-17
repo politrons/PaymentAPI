@@ -1,4 +1,23 @@
 
+### Application
+
+#### Stack
+
+Quarkus, JAX-RS, Vavr, Mockito
+
+### Domain
+
+#### Stack
+
+Vavr, Orika
+
+### Infrastructure
+
+#### Stack
+
+Orika, Vavr, Orika, Cassandra, Mockito
+
+
 ### Run 
 
 Once that you have your project created, you just need to run the compile and run command of mvn quarkus
@@ -6,16 +25,7 @@ Once that you have your project created, you just need to run the compile and ru
 ```
 ./mvnw compile quarkus:dev`
 ```
-
-Now you can reach the application container `indext.html` `http://localhost:8080/`
-
-And if you want to reach your first endpoint created you can go to `http://localhost:8080/your_endpoint`
  
-### Program
-
-Here I develop a simple Serverless where thanks to Quarkus and JAX-RS we make the transport(Request/Response) layer totally agnostic.
-You can see the API resource of the application as entry point [here](src/main/java/com/politrons/quarkus/resource/PolitronsQuarkusResource.java)   
-
 
 ### Health check
 

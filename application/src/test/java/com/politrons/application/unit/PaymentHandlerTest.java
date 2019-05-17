@@ -6,24 +6,43 @@ import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.handler.impl.PaymentHandlerImpl;
 import com.politrons.application.model.command.AddPaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
-import com.politrons.application.service.PaymentService;
-import com.politrons.application.service.impl.PaymentServiceImpl;
+import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.repository.PaymentRepository;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static io.vavr.API.Right;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class PaymentHandlerTest {
+
+    @Mock
+    PaymentRepository paymentRepository;
+
+    private PaymentHandler paymentHandler;
+
+    @BeforeEach
+    void setup() {
+         paymentHandler = new PaymentHandlerImpl(paymentRepository);
+    }
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void addPaymentHandler() throws IOException {
+        when(paymentRepository.addPayment(any(PaymentAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.addPaymentCommand(), AddPaymentCommand.class);
-        PaymentHandler paymentHandler = new PaymentHandlerImpl();
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.addPayment(addPaymentCommand);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());

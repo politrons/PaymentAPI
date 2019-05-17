@@ -1,10 +1,12 @@
 package com.politrons.application.service;
 
+import io.vavr.concurrent.Future;
+import io.vavr.control.Either;
+
 import javax.enterprise.context.ApplicationScoped;
-import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 public interface PaymentService {
 
-    CompletionStage<String> getUserAsync(Long id);
+    Future<Either<Throwable, String>> findPayment(String id);
 }

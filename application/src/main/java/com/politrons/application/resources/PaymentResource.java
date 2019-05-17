@@ -41,12 +41,11 @@ public class PaymentResource {
         return "Payment API V1.0";
     }
 
-
     @GET
     @Path("/{paymentId}")
     public CompletionStage<String> getPaymentById(@PathParam("paymentId") String id) {
         logger.debug("Request to get Payment with id " + id);
-        return service.getUserAsync(Long.valueOf(id));
+        return null;
     }
 
     @GET

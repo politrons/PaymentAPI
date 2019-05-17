@@ -5,6 +5,8 @@ import com.politrons.application.service.PaymentService;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.dao.impl.PaymentDAOImpl;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vavr.concurrent.Future;
+import io.vavr.control.Either;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,10 +23,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Inject
     PaymentDAO dao;
 
-    public CompletionStage<String> getUserAsync(Long id) {
-        return dao.searchUserById(id)
-                .thenApply(value -> value + " Using Async")
-                .thenApply(String::toUpperCase);
+    public Future<Either<Throwable, String>> findPayment(String id) {
+        return null;
     }
 
 

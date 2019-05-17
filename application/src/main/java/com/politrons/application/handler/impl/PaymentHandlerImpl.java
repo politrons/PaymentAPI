@@ -12,6 +12,8 @@ import com.politrons.domain.repository.PaymentRepository;
 import io.vavr.API;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,6 +22,8 @@ import static io.vavr.API.*;
 import static io.vavr.Patterns.$Left;
 import static io.vavr.Patterns.$Right;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @ApplicationScoped
 public class PaymentHandlerImpl implements PaymentHandler {
 
@@ -41,11 +45,15 @@ public class PaymentHandlerImpl implements PaymentHandler {
      */
     @Override
     public Future<Either<ErrorPayload, String>> addPayment(AddPaymentCommand addPaymentCommand) {
-        PaymentInfo paymentInfo = getPaymentInfo(addPaymentCommand);
-        Future<Either<Throwable, String>> eithers = PaymentAggregateRoot.create(paymentInfo);
+        Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(getPaymentAggregateRoot(addPaymentCommand));
         return eithers.map(either -> Match(either).of(
                 Case($Right($()), API::Right),
                 Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
+    }
+
+    private PaymentAggregateRoot getPaymentAggregateRoot(AddPaymentCommand addPaymentCommand) {
+        PaymentInfo paymentInfo = getPaymentInfo(addPaymentCommand);
+        return PaymentAggregateRoot.create(paymentInfo);
     }
 
     private PaymentInfo getPaymentInfo(AddPaymentCommand addPaymentCommand) {
