@@ -17,8 +17,8 @@ public class PaymentAggregateRoot {
     private float version;
     PaymentInfo paymentInfo;
 
-    public static void create(PaymentInfo paymentInfo) {
-
+    public static String create(PaymentInfo paymentInfo) {
+        return "1981";
 
     }
 

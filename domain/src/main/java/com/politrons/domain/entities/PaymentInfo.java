@@ -24,7 +24,7 @@ public class PaymentInfo {
     SponsorParty sponsorParty;
     BeneficiaryParty beneficiaryParty;
 
-    static PaymentInfo create(String amount,
+    public static PaymentInfo create(String amount,
                               String currency,
                               String paymentId,
                               String paymentPurpose,

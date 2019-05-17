@@ -17,7 +17,7 @@ public class DebtorParty {
     private String bankId;
     private String name;
 
-    static DebtorParty create(String accountName,
+    public static DebtorParty create(String accountName,
                               String accountNumber,
                               float accountType,
                               String address,

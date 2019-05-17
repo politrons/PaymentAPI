@@ -17,7 +17,7 @@ public class BeneficiaryParty {
     private String bankId;
     private String name;
 
-    static BeneficiaryParty create(String accountName,
+    public static BeneficiaryParty create(String accountName,
                                    String accountNumber,
                                    float accountType,
                                    String address,

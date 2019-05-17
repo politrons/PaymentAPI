@@ -17,7 +17,7 @@ import java.util.concurrent.CompletionStage;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PaymentResource {
 
-    Logger logger = LoggerFactory.getLogger(PaymentResource.class);
+    private Logger logger = LoggerFactory.getLogger(PaymentResource.class);
 
     @Inject
     PaymentService service;
@@ -51,7 +51,7 @@ public class PaymentResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
     public CompletionStage<String> addPayment(AddPaymentCommand addPaymentCommand) {
-        return CompletableFuture.supplyAsync(() -> "1981");
+        return CompletableFuture.supplyAsync(() -> handler.addPayment(addPaymentCommand));
     }
 
     @PUT

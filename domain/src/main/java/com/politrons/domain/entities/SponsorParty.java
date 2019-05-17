@@ -15,7 +15,7 @@ public class SponsorParty {
     private String bankId;
     private String bankIdCode;
 
-    static SponsorParty create(String accountNumber,
+    public static SponsorParty create(String accountNumber,
                                String bankId,
                                String bankIdCode) {
         return new SponsorParty(accountNumber, bankId, bankIdCode);
