@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.acme</groupId>
-  <artifactId>paymentAPI</artifactId>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.acme</groupId>
+    <artifactId>paymentAPI</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
@@ -12,274 +13,283 @@
         <module>domain</module>
     </modules>
     <properties>
-    <surefire-plugin.version>2.22.0</surefire-plugin.version>
-    <quarkus.version>0.15.0</quarkus.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-  </properties>
-  <dependencyManagement>
+        <surefire-plugin.version>2.22.0</surefire-plugin.version>
+        <quarkus.version>0.15.0</quarkus.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${quarkus.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-vertx</artifactId>
-    </dependency>
-      <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-smallrye-health</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-undertow-websockets</artifactId>
-      </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
-    </dependency>
-
-
-      <dependency>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-          <version>1.18.6</version>
-      </dependency>
-
-      <!--        VavrIO-->
-      <dependency>
-          <groupId>io.vavr</groupId>
-          <artifactId>vavr</artifactId>
-          <version>0.10.0</version>
-      </dependency>
-<!--      Gatling-->
-      <dependency>
-          <groupId>io.gatling</groupId>
-          <artifactId>gatling-app</artifactId>
-          <version>2.3.1</version>
-      </dependency>
-      <dependency>
-          <groupId>io.gatling.highcharts</groupId>
-          <artifactId>gatling-charts-highcharts</artifactId>
-          <version>2.3.1</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>io.netty</groupId>
-                  <artifactId>*</artifactId>
-              </exclusion>
-          </exclusions>
-      </dependency>
-      <dependency>
-          <groupId>org.scala-lang</groupId>
-          <artifactId>scala-library</artifactId>
-          <version>2.12.4</version>
-      </dependency>
-<!--      <dependency>-->
-<!--          <groupId>io.gatling</groupId>-->
-<!--          <artifactId>gatling-maven-plugin</artifactId>-->
-<!--          <version>3.0.2</version>-->
-<!--      </dependency>-->
-      <dependency>
-          <groupId>org.scalatest</groupId>
-          <artifactId>scalatest_2.12</artifactId>
-          <version>3.0.1</version>
-          <scope>test</scope>
-      </dependency>
-  </dependencies>
-
-  <build>
-
-
-      <testResources>
-          <testResource>
-              <directory>src/test/scala</directory>
-          </testResource>
-          <testResource>
-              <directory>src/test/resources</directory>
-              <includes>
-                  <include>**/*</include>
-              </includes>
-          </testResource>
-      </testResources>
-
-
-    <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${quarkus.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-          </systemProperties>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <profiles>
-    <profile>
-      <id>native</id>
-      <activation>
-        <property>
-          <name>native</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
+        <!--        Quarkus-->
+        <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <version>${quarkus.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <systemProperties>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-vertx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-undertow-websockets</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+
+        <!--    Lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+        </dependency>
+        <!--      Logger-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+
+        <!--        VavrIO-->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+        <!--      Gatling-->
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-app</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>2.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.4</version>
+        </dependency>
+        <!--      <dependency>-->
+        <!--          <groupId>io.gatling</groupId>-->
+        <!--          <artifactId>gatling-maven-plugin</artifactId>-->
+        <!--          <version>3.0.2</version>-->
+        <!--      </dependency>-->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.12</artifactId>
+            <version>3.0.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
 
 
+        <testResources>
+            <testResource>
+                <directory>src/test/scala</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+        </testResources>
+
+
+        <plugins>
             <plugin>
-                  <groupId>net.alchim31.maven</groupId>
-                  <artifactId>scala-maven-plugin</artifactId>
-                  <executions>
-                      <execution>
-                          <id>scala-compile-first</id>
-                          <phase>process-resources</phase>
-                          <goals>
-                              <goal>add-source</goal>
-                              <goal>compile</goal>
-                          </goals>
-                      </execution>
-                      <execution>
-                          <id>scala-test-compile</id>
-                          <phase>process-test-resources</phase>
-                          <goals>
-                              <goal>testCompile</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
-
-              <!-- scalaTest -->
-              <plugin>
-                  <groupId>org.scalatest</groupId>
-                  <artifactId>scalatest-maven-plugin</artifactId>
-                  <version>1.0</version>
-                  <configuration>
-                      <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                      <junitxml>.</junitxml>
-                      <filereports>WDF TestSuite.txt</filereports>
-                      <argLine>-Dcrypto.uuid.enabled=false</argLine>
-                  </configuration>
-
-                  <executions>
-                      <execution>
-                          <id>test</id>
-                          <phase>test</phase>
-                          <goals>
-                              <goal>test</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
-
-              <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-compiler-plugin</artifactId>
-                  <executions>
-                      <execution>
-                          <phase>compile</phase>
-                          <goals>
-                              <goal>compile</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
-            <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>2.2.2</version>
-                <configuration>
-                    <disableCompiler>true</disableCompiler>
-                    <configFolder>${project.basedir}/src/test/resources</configFolder>
-                    <dataFolder>${project.basedir}/src/test/resources/data</dataFolder>
-                    <resultsFolder>${project.basedir}/target/gatling/results</resultsFolder>
-                    <bodiesFolder>${project.basedir}/src/test/resources/bodies</bodiesFolder>
-                    <!--<runDescription>This-is-the-run-description</runDescription>-->
-                    <runMultipleSimulations>true</runMultipleSimulations>
-                </configuration>
-                <dependencies>
-                </dependencies>
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>warmUp-volume</id>-->
-<!--                        <goals>-->
-<!--                            <goal>execute</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <simulationClass>gatling.volume.WarmUpVolumeSimulation</simulationClass>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <systemProperties>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemProperties>
+                </configuration>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+    </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.quarkus</groupId>
+                        <artifactId>quarkus-maven-plugin</artifactId>
+                        <version>${quarkus.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <configuration>
+                                    <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${surefire-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <systemProperties>
+                                        <native.image.path>
+                                            ${project.build.directory}/${project.build.finalName}-runner
+                                        </native.image.path>
+                                    </systemProperties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>scala-compile-first</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>scala-test-compile</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- scalaTest -->
+                    <plugin>
+                        <groupId>org.scalatest</groupId>
+                        <artifactId>scalatest-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                            <junitxml>.</junitxml>
+                            <filereports>WDF TestSuite.txt</filereports>
+                            <argLine>-Dcrypto.uuid.enabled=false</argLine>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>io.gatling</groupId>
+                        <artifactId>gatling-maven-plugin</artifactId>
+                        <version>2.2.2</version>
+                        <configuration>
+                            <disableCompiler>true</disableCompiler>
+                            <configFolder>${project.basedir}/src/test/resources</configFolder>
+                            <dataFolder>${project.basedir}/src/test/resources/data</dataFolder>
+                            <resultsFolder>${project.basedir}/target/gatling/results</resultsFolder>
+                            <bodiesFolder>${project.basedir}/src/test/resources/bodies</bodiesFolder>
+                            <!--<runDescription>This-is-the-run-description</runDescription>-->
+                            <runMultipleSimulations>true</runMultipleSimulations>
+                        </configuration>
+                        <dependencies>
+                        </dependencies>
+                        <!--                <executions>-->
+                        <!--                    <execution>-->
+                        <!--                        <id>warmUp-volume</id>-->
+                        <!--                        <goals>-->
+                        <!--                            <goal>execute</goal>-->
+                        <!--                        </goals>-->
+                        <!--                        <configuration>-->
+                        <!--                            <simulationClass>gatling.volume.WarmUpVolumeSimulation</simulationClass>-->
+                        <!--                        </configuration>-->
+                        <!--                    </execution>-->
+                        <!--                </executions>-->
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
