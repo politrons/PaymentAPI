@@ -1,8 +1,8 @@
 package com.politrons.application.model.command;
 
-import com.politrons.application.model.payload.BeneficiaryPartyPayload;
-import com.politrons.application.model.payload.DebtorPartyPayload;
-import com.politrons.application.model.payload.SponsorPartyPayload;
+import com.politrons.application.model.payload.request.BeneficiaryPartyRequest;
+import com.politrons.application.model.payload.request.DebtorPartyRequest;
+import com.politrons.application.model.payload.request.SponsorPartyRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +22,8 @@ public class AddPaymentCommand {
     private String reference;
     private String schemePaymentType;
     private String schemePaymentSubType;
-    DebtorPartyPayload debtorParty;
-    SponsorPartyPayload sponsorParty;
-    BeneficiaryPartyPayload beneficiaryParty;
+    DebtorPartyRequest debtorParty;
+    SponsorPartyRequest sponsorParty;
+    BeneficiaryPartyRequest beneficiaryParty;
 
 }

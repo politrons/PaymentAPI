@@ -1,4 +1,4 @@
-package com.politrons.application.model.payload;
+package com.politrons.application.model.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BeneficiaryPartyPayload {
+public class BeneficiaryPartyRequest {
     private String accountName;
     private String accountNumber;
     private float accountType;

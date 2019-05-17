@@ -2,6 +2,7 @@ package com.politrons.application.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.application.JsonUtils;
+import com.politrons.application.model.payload.response.AddPaymentResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class PaymentResourceTest {
                 .when().post("/v1/payment/")
                 .then()
                 .statusCode(200)
-                .body(is("1981"));
+                .body(is("{\"code\":200,\"payload\":\"1981\"}"));
     }
 
 }

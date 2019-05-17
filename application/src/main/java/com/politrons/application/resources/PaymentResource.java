@@ -2,7 +2,11 @@ package com.politrons.application.resources;
 
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
+import com.politrons.application.model.error.ErrorPayload;
+import com.politrons.application.model.payload.response.AddPaymentResponse;
 import com.politrons.application.service.PaymentService;
+import io.vavr.API;
+import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +15,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
+import static io.vavr.API.*;
+import static io.vavr.API.Left;
+import static io.vavr.Patterns.$Left;
+import static io.vavr.Patterns.$Right;
 
 @Path("/v1/payment")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,11 +56,21 @@ public class PaymentResource {
         return null;
     }
 
+    /**
+     * Endpoint to persist a payment. We receive a AddPaymentCommand which after being passed into the domain layer
+     * it's persisted using the infra layer.
+     * @param addPaymentCommand that contains the information of the payment to be created
+     * @return a Future of the AddPaymentResponse with the operation code and the payload
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
-    public CompletionStage<String> addPayment(AddPaymentCommand addPaymentCommand) {
-        return CompletableFuture.supplyAsync(() -> handler.addPayment(addPaymentCommand));
+    public CompletionStage<AddPaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
+        return handler.addPayment(addPaymentCommand)
+                .map(either -> Match(either).of(
+                        Case($Right($()), id -> new AddPaymentResponse<>(200, id)),
+                        Case($Left($()), errorPayload -> new AddPaymentResponse<>(errorPayload.code, errorPayload.cause))))
+                .toCompletableFuture();
     }
 
     @PUT

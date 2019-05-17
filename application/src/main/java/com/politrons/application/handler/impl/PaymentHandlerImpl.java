@@ -2,15 +2,23 @@ package com.politrons.application.handler.impl;
 
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
+import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.domain.PaymentAggregateRoot;
 import com.politrons.domain.entities.BeneficiaryParty;
 import com.politrons.domain.entities.DebtorParty;
 import com.politrons.domain.entities.PaymentInfo;
 import com.politrons.domain.entities.SponsorParty;
 import com.politrons.domain.repository.PaymentRepository;
+import io.vavr.API;
+import io.vavr.concurrent.Future;
+import io.vavr.control.Either;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
+import static io.vavr.API.*;
+import static io.vavr.Patterns.$Left;
+import static io.vavr.Patterns.$Right;
 
 @ApplicationScoped
 public class PaymentHandlerImpl implements PaymentHandler {
@@ -18,16 +26,29 @@ public class PaymentHandlerImpl implements PaymentHandler {
     @Inject
     PaymentRepository paymentRepository;
 
+    /**
+     * Handler to receive a Command to add a payment and return the id of the operation.
+     *
+     * Since the operation to database it take time and it might not be part of the machine we
+     * need to make this operation async. As personal level I like Vavr library for functional programing in Java.(Pretty much like Scala monads)
+     *
+     * Also since we have to deal with impure world, we need to control effects. So in order to control the possibility
+     * of a Database problem, or network, we will catch the throwable and we will transform into Either of possible error [Left]
+     * or the expected output [Right]
+     *
+     * @param addPaymentCommand to be transformed into Domain model to be persisted.
+     * @return the id of the event to be modified or deleted in the future
+     */
     @Override
-    public String addPayment(AddPaymentCommand addPaymentCommand) {
-        DebtorParty debtorParty = getDebtorParty(addPaymentCommand);
-        SponsorParty sponsorParty = getSponsorParty(addPaymentCommand);
-        BeneficiaryParty beneficiaryParty = getBeneficiaryParty(addPaymentCommand);
-        PaymentInfo paymentInfo = getPaymentInfo(addPaymentCommand, debtorParty, sponsorParty, beneficiaryParty);
-        return PaymentAggregateRoot.create(paymentInfo);
+    public Future<Either<ErrorPayload, String>> addPayment(AddPaymentCommand addPaymentCommand) {
+        PaymentInfo paymentInfo = getPaymentInfo(addPaymentCommand);
+        Future<Either<Throwable, String>> eithers = PaymentAggregateRoot.create(paymentInfo);
+        return eithers.map(either -> Match(either).of(
+                Case($Right($()), API::Right),
+                Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
     }
 
-    private PaymentInfo getPaymentInfo(AddPaymentCommand addPaymentCommand, DebtorParty debtorParty, SponsorParty sponsorParty, BeneficiaryParty beneficiaryParty) {
+    private PaymentInfo getPaymentInfo(AddPaymentCommand addPaymentCommand) {
         return PaymentInfo.create(addPaymentCommand.getAmount(),
                 addPaymentCommand.getCurrency(),
                 addPaymentCommand.getPaymentId(),
@@ -37,9 +58,9 @@ public class PaymentHandlerImpl implements PaymentHandler {
                 addPaymentCommand.getReference(),
                 addPaymentCommand.getSchemePaymentSubType(),
                 addPaymentCommand.getSchemePaymentType(),
-                debtorParty,
-                sponsorParty,
-                beneficiaryParty);
+                getDebtorParty(addPaymentCommand),
+                getSponsorParty(addPaymentCommand),
+                getBeneficiaryParty(addPaymentCommand));
     }
 
     private SponsorParty getSponsorParty(AddPaymentCommand addPaymentCommand) {
