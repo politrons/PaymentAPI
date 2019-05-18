@@ -32,14 +32,14 @@ public class PaymentDAOTest extends PaymentDAOUtilsTest {
     //####################//
     @Test
     void addPaymentEvent() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(getPaymentAddedEvent());
+        Future<Either<Throwable, String>> eithers = paymentDAO.upsertPayment(getPaymentAddedEvent());
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }
 
     @Test
     void addPaymentEventWithWrongJson() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(null);
+        Future<Either<Throwable, String>> eithers = paymentDAO.upsertPayment(null);
         assertTrue(eithers.get().isLeft());
     }
 

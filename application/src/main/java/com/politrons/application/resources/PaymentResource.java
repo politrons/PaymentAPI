@@ -84,7 +84,8 @@ public class PaymentResource {
     /**
      * Endpoint where er receive the paymentId from the previous event as query param, and in the body of the request
      * the [UpdatePaymentCommand] to create a new Event with the new data updated.
-     * @param paymentId of the previous event created
+     *
+     * @param paymentId            of the previous event created
      * @param updatePaymentCommand the new data to create a new event.
      * @return a PaymentResponse with the operation code and the payload as eventId
      */
@@ -100,8 +101,9 @@ public class PaymentResource {
     @DELETE
     @Path("/{paymentId}")
     public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId) {
-         handler.deletePayment(paymentId);
-         return null;
+        return handler.deletePayment(paymentId)
+                .map(this::matchResponse)
+                .toCompletableFuture();
     }
 
 

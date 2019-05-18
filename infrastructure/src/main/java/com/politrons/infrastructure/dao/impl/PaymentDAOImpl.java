@@ -29,16 +29,6 @@ public class PaymentDAOImpl implements PaymentDAO {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * Not perfect, but we initialize the connector and start the Cassandra embedded here.
-     * Please do not do this in production!. This is just to have the connector up and running fast!.
-     */
-    @PostConstruct
-    public void initConnector() {
-        if (!CassandraConnector.isStarted()) CassandraConnector.start();
-        logger.info("Cassandra connector started");
-
-    }
 
     /**
      * Function to receive the event [PaymentAdded] and we persist into Cassandra row adding the UUID, timestamp and Event in json format.
@@ -49,7 +39,7 @@ public class PaymentDAOImpl implements PaymentDAO {
      * @return the id of the row
      */
     @Override
-    public Future<Either<Throwable, String>> addPayment(PaymentAdded paymentAdded) {
+    public Future<Either<Throwable, String>> upsertPayment(PaymentAdded paymentAdded) {
         String uuid = createNewUUID();
         return Match(Try(() -> mapper.writeValueAsString(paymentAdded))
                 .flatMap(event -> Try.of(() -> getAddPaymentQuery(uuid, getTimestampMillis(), event))
@@ -91,15 +81,18 @@ public class PaymentDAOImpl implements PaymentDAO {
      */
     private Either<Throwable, PaymentStateAggregateRoot> transformResultSetToPaymentAggregateRoot(Try<ResultSet> maybeResultSet) {
         return Match(maybeResultSet).of(
-                Case($Success($()), resultSet ->
-                        Match(Try.of(() -> mapper.readValue(resultSet.one().getString("event"), PaymentStateAggregateRoot.class))).of(
-                                Case($Success($()), API::Right),
-                                Case($Failure($()), throwable -> {
-                                    logger.error("Error in add payment DAO transforming ResultSet. Caused by:" + throwable.getCause());
-                                    return Left(throwable);
-                                }))),
+                Case($Success($()), this::processResultSet),
                 Case($Failure($()), throwable -> {
                     logger.error("Error in fetch payment DAO transforming ResultSet. Caused by:" + throwable.getCause());
+                    return Left(throwable);
+                }));
+    }
+
+    private Either<Throwable, PaymentStateAggregateRoot> processResultSet(ResultSet resultSet) {
+        return Match(Try.of(() -> mapper.readValue(resultSet.one().getString("event"), PaymentStateAggregateRoot.class))).of(
+                Case($Success($()), API::Right),
+                Case($Failure($()), throwable -> {
+                    logger.error("Error in add payment DAO transforming ResultSet. Caused by:" + throwable.getCause());
                     return Left(throwable);
                 }));
     }

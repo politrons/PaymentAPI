@@ -10,7 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public interface PaymentDAO {
 
-    Future<Either<Throwable,String>> addPayment(PaymentAdded paymentAdded);
+    Future<Either<Throwable,String>> upsertPayment(PaymentAdded paymentAdded);
 
     Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id);
 }

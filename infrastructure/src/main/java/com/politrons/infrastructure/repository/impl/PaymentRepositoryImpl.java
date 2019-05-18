@@ -13,7 +13,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.UUID;
 
 @NoArgsConstructor
 @ApplicationScoped
@@ -40,7 +39,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
         mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentAdded.class);
         MapperFacade mapper = mapperFactory.getMapperFacade();
         PaymentAdded paymentAdded = mapper.map(paymentStateAggregateRoot, PaymentAdded.class);
-        return paymentDAO.addPayment(paymentAdded);
+        return paymentDAO.upsertPayment(paymentAdded);
     }
 
     /**

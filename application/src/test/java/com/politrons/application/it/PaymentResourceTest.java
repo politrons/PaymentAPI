@@ -71,6 +71,18 @@ class PaymentResourceTest {
     }
 
     @Test
+    void deletePaymentEndpoint() throws JsonProcessingException {
+        String uuid = addMockPayment();
+        given()
+                .contentType("application/json")
+                .header(new Header("Content-Type", "application/json"))
+                .when().delete("/v1/payment/" + uuid)
+                .then()
+                .statusCode(200)
+                .body(containsString("\"code\":200,\""));
+    }
+
+    @Test
     void fetchPaymentEndpoint() throws JsonProcessingException {
         String uuid = addMockPayment();
         given()

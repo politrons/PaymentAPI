@@ -38,7 +38,7 @@ public class PaymentRepositoryTest {
     @Test
     void addPaymentEvent() {
         PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "payment", 0, getPaymentInfo());
-        when(paymentDAO.addPayment(any(PaymentAdded.class))).thenReturn(Future.of(() -> Right("1981")));
+        when(paymentDAO.upsertPayment(any(PaymentAdded.class))).thenReturn(Future.of(() -> Right("1981")));
         Future<Either<Throwable, String>> eithers = paymentRepository.persistPayment(paymentStateAggregateRoot);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());

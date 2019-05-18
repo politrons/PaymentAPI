@@ -16,7 +16,7 @@ public class PaymentDAOBackendDownTest extends PaymentDAOUtilsTest{
 
     @Test
     void addPaymentEvenWithDatabaseDown() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(getPaymentAddedEvent());
+        Future<Either<Throwable, String>> eithers = paymentDAO.upsertPayment(getPaymentAddedEvent());
         assertTrue(eithers.get().isLeft());
     }
 
