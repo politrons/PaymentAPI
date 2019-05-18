@@ -11,10 +11,10 @@ import java.util.UUID;
 public class PaymentDAOUtilsTest {
 
 
-    String getAddPaymentQuery(PaymentAdded paymentAdded, String timeStampMillis, String event) {
+    String getAddPaymentQuery(String id, String timeStampMillis, String event) {
         return "INSERT INTO " + "paymentsSchema.payment" +
                 "(id, timestamp, event) " +
-                "VALUES (" + paymentAdded.getId() + ", '" +
+                "VALUES (" + id + ", '" +
                 timeStampMillis + "', '" +
                 event + "');";
     }

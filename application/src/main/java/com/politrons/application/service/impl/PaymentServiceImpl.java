@@ -17,6 +17,8 @@ import ma.glasnost.orika.MapperFacade;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import java.util.List;
+
 import static io.vavr.API.*;
 import static io.vavr.Patterns.*;
 
@@ -47,6 +49,12 @@ public class PaymentServiceImpl implements PaymentService {
                             logger.error("Error in fetch payment Service. Caused by:" + throwable.getCause());
                             return Left(new ErrorPayload(500, throwable.getMessage()));
                         })));
+    }
+
+    @Override
+    public Future<Either<ErrorPayload, List<PaymentStatePayload>>> fetchAllPayments() {
+        Future<Either<Throwable, List<PaymentStateAggregateRoot>>> eithers = paymentDAO.fetchAllPayments();
+        return null;
     }
 
     /**

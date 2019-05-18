@@ -62,7 +62,8 @@ public class PaymentResource {
     @GET
     @Path("/all")
     public CompletionStage<String> fetchAllPayment() {
-        logger.debug("Request to get all Payment for user id ");
+        logger.debug("Request to get all Payments");
+        service.fetchAllPayments();
         return null;
     }
 
@@ -76,6 +77,7 @@ public class PaymentResource {
     @POST
     @Path("/")
     public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
+        logger.debug("Request to add Payment with command " + addPaymentCommand);
         return handler.addPayment(addPaymentCommand)
                 .map(this::matchResponse)
                 .toCompletableFuture();
@@ -91,16 +93,25 @@ public class PaymentResource {
      */
     @PUT
     @Path("/{paymentId}")
-    public CompletionStage<PaymentResponse<String>> updatePayment(@PathParam("paymentId") String paymentId, UpdatePaymentCommand updatePaymentCommand) {
+    public CompletionStage<PaymentResponse<String>> updatePayment(@PathParam("paymentId") String paymentId,
+                                                                  UpdatePaymentCommand updatePaymentCommand) {
+        logger.debug("Request to create update Payment event for paymentId " + paymentId);
         updatePaymentCommand.setPaymentId(paymentId);
         return handler.updatePayment(updatePaymentCommand)
                 .map(this::matchResponse)
                 .toCompletableFuture();
     }
 
+    /**
+     * Endpoint where er receive the paymentId from the previous event as query param to find the previous event
+     * change the state to [deleted] and persist as a new Event.
+     * @param paymentId of the previous event created
+     * @return a PaymentResponse with the operation code and the payload as eventId
+     */
     @DELETE
     @Path("/{paymentId}")
     public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId) {
+        logger.debug("Request to create delete Payment event for paymentId " + paymentId);
         return handler.deletePayment(paymentId)
                 .map(this::matchResponse)
                 .toCompletableFuture();

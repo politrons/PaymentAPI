@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 @ApplicationScoped
 public interface PaymentService {
@@ -20,4 +21,6 @@ public interface PaymentService {
     MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     Future<Either<ErrorPayload, PaymentStatePayload>>  fetchPayment(String id);
+
+    Future<Either<ErrorPayload, List<PaymentStatePayload>>>  fetchAllPayments();
 }

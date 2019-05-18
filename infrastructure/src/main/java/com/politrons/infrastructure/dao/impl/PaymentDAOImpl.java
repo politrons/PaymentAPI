@@ -1,6 +1,7 @@
 package com.politrons.infrastructure.dao.impl;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.CassandraConnector;
@@ -13,10 +14,11 @@ import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$Failure;
@@ -52,10 +54,43 @@ public class PaymentDAOImpl implements PaymentDAO {
                 }));
     }
 
+    /**
+     * Method to find the Payment event in json format and transform into [PaymentStateAggregateRoot]
+     *
+     * @param id of the event
+     * @return PaymentStateAggregateRoot
+     */
     @Override
     public Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id) {
         return Future.of(() -> CassandraConnector.fetchPayment(fetchPaymentByIdQuery(id)))
                 .map(this::transformResultSetToPaymentAggregateRoot);
+    }
+
+    @Override
+    public Future<Either<Throwable, List<PaymentStateAggregateRoot>>> fetchAllPayments() {
+        return Future.of(() -> CassandraConnector.fetchAllPayments(fetchAllPaymentsQuery()))
+                .map(this::transformResultSetToPaymentAggregateRoots);
+    }
+
+    private Either<Throwable, List<PaymentStateAggregateRoot>> transformResultSetToPaymentAggregateRoots(Try<ResultSet> maybeResultSet) {
+        return Match(maybeResultSet).of(
+                Case($Success($()), rs -> Right(getPaymentStateAggregateRoots(rs))),
+                Case($Failure($()), throwable -> {
+                    logger.error("Error in fetch payment DAO transforming ResultSet. Caused by:" + throwable.getCause());
+                    return Left(throwable);
+                }));
+    }
+
+    private List<PaymentStateAggregateRoot> getPaymentStateAggregateRoots(ResultSet rs) {
+        return rs.all().stream()
+                .map(this::transformIntoPaymentStateAggregateRoot)
+                .collect(Collectors.toList());
+    }
+
+    private PaymentStateAggregateRoot transformIntoPaymentStateAggregateRoot(Row row) {
+        return Match(Try.of(() -> mapper.readValue(row.getString("event"), PaymentStateAggregateRoot.class))).of(
+                Case($Success($()), paymentStateAggregateRoot -> paymentStateAggregateRoot),
+                Case($Failure($()), throwable -> null));
     }
 
     /**
@@ -109,6 +144,11 @@ public class PaymentDAOImpl implements PaymentDAO {
     private String fetchPaymentByIdQuery(String id) {
         return "SELECT * FROM paymentsSchema.payment WHERE id=" + id + " ";
     }
+
+    private String fetchAllPaymentsQuery() {
+        return "SELECT * FROM paymentsSchema.payment";
+    }
+
 
     private String getTimestampMillis() {
         Instant instant = Instant.now();

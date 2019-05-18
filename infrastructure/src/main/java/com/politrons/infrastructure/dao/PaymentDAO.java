@@ -6,6 +6,7 @@ import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 @ApplicationScoped
 public interface PaymentDAO {
@@ -13,4 +14,6 @@ public interface PaymentDAO {
     Future<Either<Throwable,String>> upsertPayment(PaymentAdded paymentAdded);
 
     Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id);
+
+    Future<Either<Throwable, List<PaymentStateAggregateRoot>>> fetchAllPayments();
 }

@@ -43,6 +43,7 @@ object CassandraConnector {
 
   def fetchPayment(query: String): Try[ResultSet] = executeQuery(query)
 
+  def fetchAllPayments(query: String): Try[ResultSet] = executeQuery(query)
 
   /**
     * Init the session/cluster to cassandra nd create the keyspace and table in case does not exist.
