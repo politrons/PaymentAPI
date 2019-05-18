@@ -8,6 +8,7 @@ import io.restassured.http.Header;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
@@ -37,7 +38,7 @@ class PaymentResourceTest {
                 .when().post("/v1/payment/")
                 .then()
                 .statusCode(200)
-                .body(is("{\"code\":200,\"payload\":\"1981\"}"));
+                .body(containsString("\"code\":200,\""));
     }
 
 }

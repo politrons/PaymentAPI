@@ -19,8 +19,8 @@ object CassandraConnector {
           PRIMARY KEY (id )
         );"""
 
+  var session: Session = _
   private var cluster: Cluster = _
-  private var session: Session = _
   private var cassandra: Cassandra = _
 
   def start(): Unit = {
@@ -28,6 +28,11 @@ object CassandraConnector {
     cassandra = cassandraFactory.create()
     cassandra.start()
     initCassandra()
+  }
+
+  def stop() {
+    session.close()
+    cluster.close()
   }
 
   def addPayment(query: String): Try[ResultSet] = {
@@ -40,6 +45,7 @@ object CassandraConnector {
     */
   def initCassandra(): Unit = {
     initCluster(cassandra.getSettings)
+    cleanCassandra()
     createSchema()
     createTable()
   }
@@ -66,6 +72,13 @@ object CassandraConnector {
   private def createTable(script: String = defaultTable): Unit = {
     session.execute(script)
     println(s"Table created if not exist")
+  }
+
+  /**
+    * Clean the table data from the test
+    */
+  private def cleanCassandra(keySpace: String = "paymentsSchema", table: String = "payment"): Unit = {
+    Try.of(() => session.execute(s"""truncate  $keySpace.$table"""))
   }
 
 }

@@ -1,34 +1,41 @@
 package com.politrons.infrastructure.dao.impl;
 
 import com.politrons.infrastructure.CassandraConnector;
-import com.politrons.infrastructure.dao.PaymentDAO;
+import com.politrons.infrastructure.events.PaymentAdded;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
-public class PaymentDAOTest {
+public class PaymentDAOTest extends PaymentDAOUtilsTest {
 
-    private PaymentDAO paymentDAO;
+    private PaymentDAOImpl paymentDAO = new PaymentDAOImpl();
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void init(){
         CassandraConnector.start();
     }
 
-//    @Test
+    @Test
     void addPaymentEvent() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(null);
+        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(getPaymentAddedEvent());
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }
 
+    @Test
+    void addPaymentEventWithWrongJson() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.addPayment(new PaymentAdded());
+        assertTrue(eithers.get().isLeft());
+    }
 
+    @AfterAll
+    static void close(){
+        CassandraConnector.stop();
+    }
 
 }
