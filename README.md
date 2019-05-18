@@ -63,26 +63,26 @@ public class PaymentResource {
 
 ![My image](img/testPyramid.png)
 
-`To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
+**To go fast you have to go well** this quote of Robert C. Martin express perfectly what TDD and BDD is. You should think first in all corner cases of your program, and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
 In our application I invested around 70% of the time implementing the test framework, from the most concrete type of testing(Unit) to higher level of Integration.
 
-* **Unit**: We use JUnit5 together with Mockito to Mock external resources of your class
-* **Integration**: We use Quarkus server, which include a very nice Test framework to do BDD and run the application and test all layers of your application.
-Just to be clear, the IT test are just a prove that our Unit test are well designed and the Mock behaves as I expect. None IT test it should fail ever. And if it does, 
+* **Unit**: I used JUnit5 together with Mockito to Mock external resources of your class.
+* **Integration**: I used Quarkus server, which include a very nice Test framework to do BDD and run the application and test all layers of your application.
+Just to be clear, the IT test are just a proof that our Unit test are well designed and the Mock behaves as I expect. None IT test should ever fail. And if it does, 
 you have to reproduce it in Unit test.
 
 ## Technology Stack
 
-As Http Server I used Quarkus, a new Serverless framework implemented by RedHat team, as a new Power Vertx framework. Ineed a good choice to create Reactive systems.
+As Http Server I used **Quarkus**, a new Serverless framework implemented by RedHat team, as a new Power Vertx framework. Indeed a good choice to create Reactive systems.
 
-For the API I used JAX-RS standard.
+For the API I used **JAX-RS** standard.
 
-In order to have a reactive system, functional programing it's a powerful tool. Even Java it's functional since Java 8 it's not Scala. And a good library for functional 
-programing that make you feel like you're in Scala realm again, it's Vavr.
+In order to have a reactive system, functional programing it's a powerful tool. Although Java is functional since Java 8 it's not Scala. **Vavr** is good library for functional 
+programing that makes you feel like you're in Scala realm again.
 
-To make transformation of models between layer doing DDD I used Orika.
+To make transformation of models between layer doing DDD, I used **Orika**.
 
 Finally as Connector and Database I chose Cassandra since it's a good choice for Event sourcing.
 
