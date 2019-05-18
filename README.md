@@ -62,6 +62,8 @@ public class PaymentResource {
 
 ## Testing
 
+![My image](img/testPyramid.png)
+
 To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
