@@ -13,6 +13,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.UUID;
 
 @NoArgsConstructor
 @ApplicationScoped
@@ -24,17 +25,18 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     PaymentRepositoryImpl(PaymentDAO paymentDAO) {
-        this.paymentDAO =paymentDAO;
+        this.paymentDAO = paymentDAO;
     }
 
     /**
      * Function responsible from the transformation from the AggregateRoot of the domain layer
      * into the Event to be persisted.
+     *
      * @param paymentStateAggregateRoot domain model to be transform into event.
      * @return The id of the transaction for futures fetch.
      */
     @Override
-    public Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+    public Future<Either<Throwable, String>> persistPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
         mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentAdded.class);
         MapperFacade mapper = mapperFactory.getMapperFacade();
         PaymentAdded paymentAdded = mapper.map(paymentStateAggregateRoot, PaymentAdded.class);

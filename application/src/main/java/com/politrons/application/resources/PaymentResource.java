@@ -43,6 +43,7 @@ public class PaymentResource {
      * We receive the id and we use to create the query to be passed into the service.
      * No transformation from Command into Domain into Event need it in Queries.
      * Only from domain into Payload to make our application not too much couple with domain.
+     *
      * @param id of the payment to fetch
      * @return the
      */
@@ -67,6 +68,7 @@ public class PaymentResource {
     /**
      * Endpoint to persist a payment. We receive a AddPaymentCommand which after being passed into the domain layer
      * it's persisted using the infra layer.
+     *
      * @param addPaymentCommand that contains the information of the payment to be created
      * @return a Future of the PaymentResponse with the operation code and the payload
      */
@@ -83,6 +85,8 @@ public class PaymentResource {
     @PUT
     @Path("/{paymentId}")
     public CompletionStage<String> updatePayment(@PathParam("paymentId") String id, UpdatePaymentCommand updatePaymentCommand) {
+        updatePaymentCommand.setPaymentId(id);
+        handler.updatePayment(updatePaymentCommand);
         return CompletableFuture.completedFuture("\"code\":200,\"");
     }
 

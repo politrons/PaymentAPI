@@ -9,6 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public interface PaymentRepository {
 
-    Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot);
+    Future<Either<Throwable, String>> persistPayment(PaymentStateAggregateRoot paymentStateAggregateRoot);
 
 }
