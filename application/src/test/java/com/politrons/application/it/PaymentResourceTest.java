@@ -11,7 +11,6 @@ import com.politrons.infrastructure.dto.SponsorPartyDTO;
 import com.politrons.infrastructure.events.PaymentAdded;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
-import io.restassured.response.ResponseBody;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,7 @@ class PaymentResourceTest {
         given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
-                .body(JsonUtils.addPaymentCommand())
+                .body(JsonUtils.paymentRequest())
                 .when().post("/v1/payment/")
                 .then()
                 .statusCode(200)
@@ -59,14 +58,21 @@ class PaymentResourceTest {
     }
 
     @Test
+    void updatePaymentEndpoint() throws JsonProcessingException {
+        String uuid = addMockPayment();
+        given()
+                .contentType("application/json")
+                .header(new Header("Content-Type", "application/json"))
+                .body(JsonUtils.paymentRequest())
+                .when().put("/v1/payment/" + uuid)
+                .then()
+                .statusCode(200)
+                .body(containsString("\"code\":200,\""));
+    }
+
+    @Test
     void fetchPaymentEndpoint() throws JsonProcessingException {
-
-        String uuid = UUID.randomUUID().toString();
-        PaymentAdded paymentAddedEvent = getPaymentAddedEvent();
-        paymentAddedEvent.setId(uuid);
-        String event = mapper.writeValueAsString(paymentAddedEvent);
-        CassandraConnector.addPayment(getAddPaymentQuery(paymentAddedEvent, "12345", event));
-
+        String uuid = addMockPayment();
         given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
@@ -74,6 +80,15 @@ class PaymentResourceTest {
                 .then()
                 .statusCode(200)
                 .body(containsString("\"code\":200,\""));
+    }
+
+    private String addMockPayment() throws JsonProcessingException {
+        String uuid = UUID.randomUUID().toString();
+        PaymentAdded paymentAddedEvent = getPaymentAddedEvent();
+        paymentAddedEvent.setId(uuid);
+        String event = mapper.writeValueAsString(paymentAddedEvent);
+        CassandraConnector.addPayment(getAddPaymentQuery(paymentAddedEvent, "12345", event));
+        return uuid;
     }
 
 

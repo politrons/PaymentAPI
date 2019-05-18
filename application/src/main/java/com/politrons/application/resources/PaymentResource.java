@@ -2,6 +2,7 @@ package com.politrons.application.resources;
 
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
+import com.politrons.application.model.command.UpdatePaymentCommand;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import static io.vavr.API.*;
@@ -79,9 +81,9 @@ public class PaymentResource {
     }
 
     @PUT
-    @Path("/")
-    public CompletionStage<String> updatePayment() {
-        return null;
+    @Path("/{paymentId}")
+    public CompletionStage<String> updatePayment(@PathParam("paymentId") String id, UpdatePaymentCommand updatePaymentCommand) {
+        return CompletableFuture.completedFuture("\"code\":200,\"");
     }
 
     @DELETE

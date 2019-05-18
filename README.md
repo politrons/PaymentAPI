@@ -85,7 +85,7 @@ programing that make you feel that you're in Scala realm again, it's Vavr.
 
 To make transformation of models between layer doing DDD we use Orika.
 
-Finally as Connector and Database I choose Cassandra since it's a good choice for Event sourcing.
+Finally as Connector and Database we choose Cassandra since it's a good choice for Event sourcing.
 
 * **Application**: Quarkus, JAX-RS, Vavr, Mockito
 

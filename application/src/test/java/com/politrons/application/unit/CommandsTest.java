@@ -3,6 +3,7 @@ package com.politrons.application.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.application.JsonUtils;
 import com.politrons.application.model.command.AddPaymentCommand;
+import com.politrons.application.model.command.UpdatePaymentCommand;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,8 +16,14 @@ class CommandsTest {
 
     @Test
     void transformJsonToAddPaymentCommand() throws IOException {
-        AddPaymentCommand paymentInfo = mapper.readValue(JsonUtils.addPaymentCommand(), AddPaymentCommand.class);
-        assertNotNull(paymentInfo);
+        AddPaymentCommand command = mapper.readValue(JsonUtils.paymentRequest(), AddPaymentCommand.class);
+        assertNotNull(command);
+    }
+
+    @Test
+    void transformJsonToUpdatePaymentCommand() throws IOException {
+        UpdatePaymentCommand command = mapper.readValue(JsonUtils.paymentRequest(), UpdatePaymentCommand.class);
+        assertNotNull(command);
     }
 
 }

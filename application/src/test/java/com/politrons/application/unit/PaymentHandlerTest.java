@@ -42,7 +42,7 @@ class PaymentHandlerTest {
     @Test
     void addPaymentHandler() throws IOException {
         when(paymentRepository.addPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
-        AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.addPaymentCommand(), AddPaymentCommand.class);
+        AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.paymentRequest(), AddPaymentCommand.class);
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.addPayment(addPaymentCommand);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
