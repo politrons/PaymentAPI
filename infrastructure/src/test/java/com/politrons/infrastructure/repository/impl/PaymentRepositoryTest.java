@@ -17,8 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static io.vavr.API.Right;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +41,15 @@ public class PaymentRepositoryTest {
         Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(paymentAggregateRoot);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void fetchPaymentEvent() {
+        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("myCustomUUID", "payment", 0, getPaymentInfo());
+        when(paymentDAO.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(paymentAggregateRoot)));
+        Future<Either<Throwable, PaymentAggregateRoot>> eithers = paymentRepository.fetchPayment("1981");
+        assertTrue(eithers.get().isRight());
+        assertEquals(eithers.get().right().get().getId(), "myCustomUUID");
     }
 
     private PaymentInfo getPaymentInfo() {

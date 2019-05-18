@@ -32,10 +32,10 @@ public class PaymentHandlerImpl implements PaymentHandler {
 
     /**
      * Handler to receive a Command to add a payment and return the id of the operation.
-     *
+     * <p>
      * Since the operation to database it take time and it might not be part of the machine we
      * need to make this operation async. As personal level I like Vavr library for functional programing in Java.(Pretty much like Scala monads)
-     *
+     * <p>
      * Also since we have to deal with impure world, we need to control effects. So in order to control the possibility
      * of a Database problem, or network, we will catch the throwable and we will transform into Either of possible error [Left]
      * or the expected output [Right]
@@ -45,10 +45,10 @@ public class PaymentHandlerImpl implements PaymentHandler {
      */
     @Override
     public Future<Either<ErrorPayload, String>> addPayment(AddPaymentCommand addPaymentCommand) {
-        Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(getPaymentAggregateRoot(addPaymentCommand));
-        return eithers.map(either -> Match(either).of(
-                Case($Right($()), API::Right),
-                Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
+        return paymentRepository.addPayment(getPaymentAggregateRoot(addPaymentCommand))
+                .map(either -> Match(either).of(
+                        Case($Right($()), API::Right),
+                        Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
     }
 
     private PaymentAggregateRoot getPaymentAggregateRoot(AddPaymentCommand addPaymentCommand) {

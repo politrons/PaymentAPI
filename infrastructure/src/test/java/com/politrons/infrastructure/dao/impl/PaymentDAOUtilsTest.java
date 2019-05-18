@@ -10,6 +10,15 @@ import java.util.UUID;
 
 public class PaymentDAOUtilsTest {
 
+
+    protected String getAddPaymentQuery(PaymentAdded paymentAdded, String timeStampMillis, String event) {
+        return "INSERT INTO " + "paymentsSchema.payment" +
+                "(id, timestamp, event) " +
+                "VALUES (" + paymentAdded.getId() + ", '" +
+                timeStampMillis + "', '" +
+                event + "');";
+    }
+
     protected PaymentAdded getPaymentAddedEvent() {
         return new PaymentAdded(UUID.randomUUID().toString(), "payment", 0, getPaymentInfoDTO());
     }
@@ -39,6 +48,8 @@ public class PaymentDAOUtilsTest {
         return new DebtorPartyDTO("accountName", "accountNumber",
                 0, "address", "bankId", "name");
     }
+
+
 
 
 }

@@ -35,4 +35,9 @@ public class PaymentRepositoryImpl implements PaymentRepository {
         return paymentDAO.addPayment(paymentAdded);
     }
 
+    @Override
+    public Future<Either<Throwable, PaymentAggregateRoot>> fetchPayment(String id) {
+        return paymentDAO.fetchPayment(id);
+    }
+
 }

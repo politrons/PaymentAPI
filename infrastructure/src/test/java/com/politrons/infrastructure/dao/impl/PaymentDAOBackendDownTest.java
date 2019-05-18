@@ -1,5 +1,8 @@
 package com.politrons.infrastructure.dao.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.events.PaymentAdded;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
@@ -7,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PaymentDAOBackendDownTest extends PaymentDAOUtilsTest{

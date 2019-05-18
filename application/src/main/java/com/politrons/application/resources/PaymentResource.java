@@ -2,22 +2,17 @@ package com.politrons.application.resources;
 
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
-import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.application.model.payload.response.AddPaymentResponse;
 import com.politrons.application.service.PaymentService;
-import io.vavr.API;
-import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import static io.vavr.API.*;
-import static io.vavr.API.Left;
 import static io.vavr.Patterns.$Left;
 import static io.vavr.Patterns.$Right;
 

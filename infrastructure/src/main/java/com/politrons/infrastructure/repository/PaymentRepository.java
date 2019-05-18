@@ -11,4 +11,6 @@ public interface PaymentRepository {
 
     Future<Either<Throwable, String>> addPayment(PaymentAggregateRoot paymentAggregateRoot);
 
+    Future<Either<Throwable, PaymentAggregateRoot>> fetchPayment(String id);
+
 }

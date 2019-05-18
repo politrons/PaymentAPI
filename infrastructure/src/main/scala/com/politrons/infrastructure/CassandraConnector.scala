@@ -35,10 +35,10 @@ object CassandraConnector {
     cluster.close()
   }
 
-  def addPayment(query: String): Try[ResultSet] = {
-    val rs: Try[ResultSet] = Try.of(() => session.execute(query))
-    rs
-  }
+  def addPayment(query: String): Try[ResultSet] = executeQuery(query)
+
+  def fetchPayment(query: String): Try[ResultSet] = executeQuery(query)
+
 
   /**
     * Init the session/cluster to cassandra nd create the keyspace and table in case does not exist.
@@ -78,7 +78,10 @@ object CassandraConnector {
     * Clean the table data from the test
     */
   private def cleanCassandra(keySpace: String = "paymentsSchema", table: String = "payment"): Unit = {
-    Try.of(() => session.execute(s"""truncate  $keySpace.$table"""))
+    executeQuery(s"""truncate  $keySpace.$table""")
   }
 
+  private def executeQuery(query: String): Try[ResultSet] = {
+    Try.of(() => session.execute(query))
+  }
 }
