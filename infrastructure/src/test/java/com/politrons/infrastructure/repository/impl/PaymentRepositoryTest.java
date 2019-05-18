@@ -1,13 +1,13 @@
 package com.politrons.infrastructure.repository.impl;
 
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.domain.entities.BeneficiaryParty;
 import com.politrons.domain.entities.DebtorParty;
 import com.politrons.domain.entities.PaymentInfo;
 import com.politrons.domain.entities.SponsorParty;
-import com.politrons.infrastructure.repository.PaymentRepository;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
+import com.politrons.infrastructure.repository.PaymentRepository;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static io.vavr.API.Right;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +37,9 @@ public class PaymentRepositoryTest {
 
     @Test
     void addPaymentEvent() {
-        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("id", "payment", 0, getPaymentInfo());
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "payment", 0, getPaymentInfo());
         when(paymentDAO.addPayment(any(PaymentAdded.class))).thenReturn(Future.of(() -> Right("1981")));
-        Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(paymentAggregateRoot);
+        Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(paymentStateAggregateRoot);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }

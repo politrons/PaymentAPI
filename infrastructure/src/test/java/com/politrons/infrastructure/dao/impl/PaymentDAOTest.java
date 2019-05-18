@@ -2,7 +2,7 @@ package com.politrons.infrastructure.dao.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.events.PaymentAdded;
 import io.vavr.concurrent.Future;
@@ -53,14 +53,14 @@ public class PaymentDAOTest extends PaymentDAOUtilsTest {
         paymentAddedEvent.setId(uuid);
         String event = mapper.writeValueAsString(paymentAddedEvent);
         CassandraConnector.addPayment(getAddPaymentQuery(paymentAddedEvent, "12345", event));
-        Future<Either<Throwable, PaymentAggregateRoot>> eithers = paymentDAO.fetchPayment(uuid);
+        Future<Either<Throwable, PaymentStateAggregateRoot>> eithers = paymentDAO.fetchPayment(uuid);
         assertTrue(eithers.get().isRight());
         assertEquals(eithers.get().right().get().getId(), uuid);
     }
 
     @Test
     void fetchPaymentWithWrongId() {
-        Future<Either<Throwable, PaymentAggregateRoot>> eithers = paymentDAO.fetchPayment("foo");
+        Future<Either<Throwable, PaymentStateAggregateRoot>> eithers = paymentDAO.fetchPayment("foo");
         assertTrue(eithers.get().isLeft());
     }
 

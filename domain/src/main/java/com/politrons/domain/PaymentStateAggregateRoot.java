@@ -1,8 +1,6 @@
 package com.politrons.domain;
 
 import com.politrons.domain.entities.PaymentInfo;
-import io.vavr.concurrent.Future;
-import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,22 +8,20 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-import static io.vavr.API.Right;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentAggregateRoot {
+public class PaymentStateAggregateRoot {
 
     private String id;
     private String type;
     private float version;
     PaymentInfo paymentInfo;
 
-    public static PaymentAggregateRoot create(PaymentInfo paymentInfo) {
+    public static PaymentStateAggregateRoot create(PaymentInfo paymentInfo) {
         String id = UUID.randomUUID().toString();
-        return new PaymentAggregateRoot(id, "payment", 0, paymentInfo);
+        return new PaymentStateAggregateRoot(id, "created", 0, paymentInfo);
     }
 
     public static void update(String id, PaymentInfo paymentInfo) {

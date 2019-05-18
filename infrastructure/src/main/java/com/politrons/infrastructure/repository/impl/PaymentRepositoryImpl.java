@@ -1,6 +1,6 @@
 package com.politrons.infrastructure.repository.impl;
 
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.repository.PaymentRepository;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
@@ -23,21 +23,21 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    public PaymentRepositoryImpl(PaymentDAO paymentDAO) {
+    PaymentRepositoryImpl(PaymentDAO paymentDAO) {
         this.paymentDAO =paymentDAO;
     }
 
     /**
      * Function responsible from the transformation from the AggregateRoot of the domain layer
      * into the Event to be persisted.
-     * @param paymentAggregateRoot domain model to be transform into event.
+     * @param paymentStateAggregateRoot domain model to be transform into event.
      * @return The id of the transaction for futures fetch.
      */
     @Override
-    public Future<Either<Throwable, String>> addPayment(PaymentAggregateRoot paymentAggregateRoot) {
-        mapperFactory.classMap(PaymentAggregateRoot.class, PaymentAdded.class);
+    public Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentAdded.class);
         MapperFacade mapper = mapperFactory.getMapperFacade();
-        PaymentAdded paymentAdded = mapper.map(paymentAggregateRoot, PaymentAdded.class);
+        PaymentAdded paymentAdded = mapper.map(paymentStateAggregateRoot, PaymentAdded.class);
         return paymentDAO.addPayment(paymentAdded);
     }
 

@@ -1,4 +1,4 @@
-package com.politrons.application.model.payload.request;
+package com.politrons.application.model.payload.payload;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SponsorPartyRequest {
+public class SponsorPartyPayload {
     private String accountNumber;
     private String bankId;
     private String bankIdCode;

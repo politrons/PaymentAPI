@@ -11,7 +11,7 @@ import java.util.UUID;
 public class PaymentDAOUtilsTest {
 
 
-    protected String getAddPaymentQuery(PaymentAdded paymentAdded, String timeStampMillis, String event) {
+    String getAddPaymentQuery(PaymentAdded paymentAdded, String timeStampMillis, String event) {
         return "INSERT INTO " + "paymentsSchema.payment" +
                 "(id, timestamp, event) " +
                 "VALUES (" + paymentAdded.getId() + ", '" +

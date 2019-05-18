@@ -2,7 +2,7 @@ package com.politrons.domain.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,15 +16,15 @@ class EntitiesTest {
     @Test
     void createPaymentAggregateRoot() {
         PaymentInfo paymentInfo = getPaymentInfo();
-        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("id", "type", 1, paymentInfo);
-        assertEquals(paymentAggregateRoot.getId(), "id");
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "type", 1, paymentInfo);
+        assertEquals(paymentStateAggregateRoot.getId(), "id");
     }
 
     @Test
     void transformDomainToJson() throws JsonProcessingException {
         PaymentInfo paymentInfo = getPaymentInfo();
-        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("id", "type", 1, paymentInfo);
-        String json = mapper.writeValueAsString(paymentAggregateRoot);
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "type", 1, paymentInfo);
+        String json = mapper.writeValueAsString(paymentStateAggregateRoot);
         assertNotNull(json);
     }
 

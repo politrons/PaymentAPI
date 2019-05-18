@@ -1,6 +1,6 @@
 package com.politrons.infrastructure.repository;
 
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 
@@ -9,6 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public interface PaymentRepository {
 
-    Future<Either<Throwable, String>> addPayment(PaymentAggregateRoot paymentAggregateRoot);
+    Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot);
 
 }

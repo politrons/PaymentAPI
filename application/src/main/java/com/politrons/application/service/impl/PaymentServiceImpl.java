@@ -2,24 +2,20 @@ package com.politrons.application.service.impl;
 
 
 import com.politrons.application.model.error.ErrorPayload;
-import com.politrons.application.model.payload.response.PaymentResponse;
+import com.politrons.application.model.payload.payload.PaymentStatePayload;
 import com.politrons.application.service.PaymentService;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.dao.PaymentDAO;
-import com.politrons.infrastructure.dao.impl.PaymentDAOImpl;
-import com.politrons.infrastructure.repository.PaymentRepository;
-import io.quarkus.vertx.ConsumeEvent;
+import com.politrons.infrastructure.events.PaymentAdded;
+import io.vavr.API;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ma.glasnost.orika.MapperFacade;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.*;
@@ -41,16 +37,25 @@ public class PaymentServiceImpl implements PaymentService {
      * Function to fetch a payment previously created/updated/deleted.
      *
      * @param id of the payment
-     * @return the Domain model PaymentAggregateRoot
+     * @return the Domain model PaymentStateAggregateRoot
      */
-    public Future<Either<ErrorPayload, PaymentResponse<PaymentAggregateRoot>>> fetchPayment(String id) {
+    public Future<Either<ErrorPayload, PaymentStatePayload>> fetchPayment(String id) {
         return paymentDAO.fetchPayment(id)
                 .map(either -> Match(either).of(
-                        Case($Right($()), paymentAggregateRoot -> Right(new PaymentResponse<>(200, paymentAggregateRoot))),
+                        Case($Right($()), paymentStateAggregateRoot -> Right(transformPaymentStateAggregateRootToPayload(paymentStateAggregateRoot))),
                         Case($Left($()), throwable -> {
                             logger.error("Error in fetch payment Service. Caused by:" + throwable.getCause());
                             return Left(new ErrorPayload(500, throwable.getMessage()));
                         })));
+    }
+
+    /**
+     * Function to transform from the domain model [PaymentStateAggregateRoot] into payload type [PaymentStatePayload]
+     */
+    private PaymentStatePayload transformPaymentStateAggregateRootToPayload(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentStatePayload.class);
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        return mapper.map(paymentStateAggregateRoot, PaymentStatePayload.class);
     }
 
 

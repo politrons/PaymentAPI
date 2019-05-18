@@ -1,12 +1,12 @@
 package com.politrons.application.unit;
 
 import com.politrons.application.model.error.ErrorPayload;
+import com.politrons.application.model.payload.payload.PaymentStatePayload;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
 import com.politrons.application.service.impl.PaymentServiceImpl;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.dao.PaymentDAO;
-import com.politrons.infrastructure.repository.impl.PaymentRepositoryImpl;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,17 +37,17 @@ class PaymentServiceTest {
 
     @Test
     void fetchPaymentService() {
-        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("myCustomUUID", "payment", 0, null);
-        when(paymentDAO.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(paymentAggregateRoot)));
-        Future<Either<ErrorPayload, PaymentResponse<PaymentAggregateRoot>>> eithers = paymentService.fetchPayment("myCustomUUID");
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("myCustomUUID", "payment", 0, null);
+        when(paymentDAO.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(paymentStateAggregateRoot)));
+        Future<Either<ErrorPayload, PaymentStatePayload>> eithers = paymentService.fetchPayment("myCustomUUID");
         assertTrue(eithers.get().isRight());
-        assertEquals(eithers.get().right().get().getPayload().getId(), "myCustomUUID");
+        assertEquals(eithers.get().right().get().getId(), "myCustomUUID");
     }
 
     @Test
     void fetchPaymentServiceError() {
         when(paymentDAO.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Left(new IllegalArgumentException())));
-        Future<Either<ErrorPayload, PaymentResponse<PaymentAggregateRoot>>> eithers = paymentService.fetchPayment("1981");
+        Future<Either<ErrorPayload, PaymentStatePayload>> eithers = paymentService.fetchPayment("1981");
         assertTrue(eithers.get().isLeft());
         assertTrue(eithers.get().left().get() instanceof ErrorPayload);
     }

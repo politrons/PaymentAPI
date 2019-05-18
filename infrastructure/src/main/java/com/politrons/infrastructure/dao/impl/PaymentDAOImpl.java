@@ -1,9 +1,8 @@
 package com.politrons.infrastructure.dao.impl;
 
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
@@ -36,7 +35,9 @@ public class PaymentDAOImpl implements PaymentDAO {
      */
     @PostConstruct
     public void initConnector() {
-        CassandraConnector.start();
+        if (!CassandraConnector.isStarted()) CassandraConnector.start();
+        logger.info("Cassandra connector started");
+
     }
 
     /**
@@ -62,7 +63,7 @@ public class PaymentDAOImpl implements PaymentDAO {
     }
 
     @Override
-    public Future<Either<Throwable, PaymentAggregateRoot>> fetchPayment(String id) {
+    public Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id) {
         return Future.of(() -> CassandraConnector.fetchPayment(fetchPaymentByIdQuery(id)))
                 .map(this::transformResultSetToPaymentAggregateRoot);
     }
@@ -84,14 +85,14 @@ public class PaymentDAOImpl implements PaymentDAO {
     }
 
     /**
-     * Function to transform from the Try monad of ResultSet into The PaymentAggregateRoot of the transaction.
+     * Function to transform from the Try monad of ResultSet into The PaymentStateAggregateRoot of the transaction.
      *
      * @param maybeResultSet monad with maybe the resultSet or a Throwable
      */
-    private Either<Throwable, PaymentAggregateRoot> transformResultSetToPaymentAggregateRoot(Try<ResultSet> maybeResultSet) {
+    private Either<Throwable, PaymentStateAggregateRoot> transformResultSetToPaymentAggregateRoot(Try<ResultSet> maybeResultSet) {
         return Match(maybeResultSet).of(
                 Case($Success($()), resultSet ->
-                        Match(Try.of(() -> mapper.readValue(resultSet.one().getString("event"), PaymentAggregateRoot.class))).of(
+                        Match(Try.of(() -> mapper.readValue(resultSet.one().getString("event"), PaymentStateAggregateRoot.class))).of(
                                 Case($Success($()), API::Right),
                                 Case($Failure($()), throwable -> {
                                     logger.error("Error in add payment DAO transforming ResultSet. Caused by:" + throwable.getCause());

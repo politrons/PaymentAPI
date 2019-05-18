@@ -3,7 +3,7 @@ package com.politrons.application.handler.impl;
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.domain.entities.BeneficiaryParty;
 import com.politrons.domain.entities.DebtorParty;
 import com.politrons.domain.entities.PaymentInfo;
@@ -51,9 +51,9 @@ public class PaymentHandlerImpl implements PaymentHandler {
                         Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
     }
 
-    private PaymentAggregateRoot getPaymentAggregateRoot(AddPaymentCommand addPaymentCommand) {
+    private PaymentStateAggregateRoot getPaymentAggregateRoot(AddPaymentCommand addPaymentCommand) {
         PaymentInfo paymentInfo = getPaymentInfo(addPaymentCommand);
-        return PaymentAggregateRoot.create(paymentInfo);
+        return PaymentStateAggregateRoot.create(paymentInfo);
     }
 
     private PaymentInfo getPaymentInfo(AddPaymentCommand addPaymentCommand) {

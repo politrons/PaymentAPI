@@ -6,7 +6,7 @@ import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.handler.impl.PaymentHandlerImpl;
 import com.politrons.application.model.command.AddPaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
-import com.politrons.domain.PaymentAggregateRoot;
+import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.repository.PaymentRepository;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
@@ -41,7 +41,7 @@ class PaymentHandlerTest {
 
     @Test
     void addPaymentHandler() throws IOException {
-        when(paymentRepository.addPayment(any(PaymentAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        when(paymentRepository.addPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.addPaymentCommand(), AddPaymentCommand.class);
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.addPayment(addPaymentCommand);
         assertTrue(eithers.get().isRight());

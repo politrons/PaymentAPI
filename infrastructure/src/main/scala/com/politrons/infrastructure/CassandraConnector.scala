@@ -23,6 +23,8 @@ object CassandraConnector {
   private var cluster: Cluster = _
   private var cassandra: Cassandra = _
 
+  def isStarted(): Boolean = session != null && !session.isClosed
+
   def start(): Unit = {
     val cassandraFactory = new LocalCassandraFactory
     cassandra = cassandraFactory.create()

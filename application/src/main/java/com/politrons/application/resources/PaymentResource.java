@@ -36,16 +36,28 @@ public class PaymentResource {
         return "Payment API V1.0";
     }
 
+    /**
+     * Endpoint to fetch a previous payment created.
+     * We receive the id and we use to create the query to be passed into the service.
+     * No transformation from Command into Domain into Event need it in Queries.
+     * Only from domain into Payload to make our application not too much couple with domain.
+     * @param id of the payment to fetch
+     * @return the
+     */
     @GET
     @Path("/{paymentId}")
-    public CompletionStage<String> getPaymentById(@PathParam("paymentId") String id) {
+    public CompletionStage<PaymentResponse<?>> fetchPaymentById(@PathParam("paymentId") String id) {
         logger.debug("Request to get Payment with id " + id);
-        return null;
+        return service.fetchPayment(id)
+                .map(either -> Match(either).of(
+                        Case($Right($()), paymentStatePayload -> new PaymentResponse<>(200, paymentStatePayload)),
+                        Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause))))
+                .toCompletableFuture();
     }
 
     @GET
     @Path("/all")
-    public CompletionStage<String> getAllPayment() {
+    public CompletionStage<String> fetchAllPayment() {
         logger.debug("Request to get all Payment for user id ");
         return null;
     }
@@ -57,7 +69,6 @@ public class PaymentResource {
      * @return a Future of the PaymentResponse with the operation code and the payload
      */
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
     public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
         return handler.addPayment(addPaymentCommand)
