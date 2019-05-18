@@ -107,3 +107,27 @@ Once that you have your project tested, you just need to run the application. Go
 ./mvnw compile quarkus:dev`
 ```
  
+## Health check
+
+PaymentAPI provide a health check endpoint to know the state of the service and backends.
+
+```
+http://localhost:8080/health
+```
+
+##### Response
+
+```
+{
+    "outcome": "UP",
+    "checks": [
+        {
+            "name": "Payment API health check",
+            "state": "UP",
+            "data": {
+                "Cassandra database": "running"
+            }
+        }
+    ]
+}
+```
