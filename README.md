@@ -12,36 +12,35 @@ Also it helps to decouple the different layers of your program(Application, Doma
 In PaymentAPI I implemented three modules described like:
 
 * **Application**: Layer which normally is the entry point of your app. It has dependency with domain and infrastructure modules.
-* **Domain**: Layer where you implement the business logic of your application it does not have any dependency.
-* **Infrastructure**: Layer where you implement the communication with the backends(Database, services, Brokers). It has dependency with domain
+* **Domain**: Layer where you implement the business logic of your application. It does not have any dependency.
+* **Infrastructure**: Layer where you implement the communication with the backends (Database, services, Brokers). It has dependency with domain.
 
 ![My image](img/ddd.png)
 
 ### CQRS
 
 Command Query Responsibility Segregation it's another Design pattern, mostly divulged by **Greg Young** which segregate the model of Commands and Queries
-in your architecture to do Writes and Reads separate. It can give you the chance to make the Queries more efficient since normally in a Cluster the 90% of the traffic
-it's for Queries.
+in your architecture to do Writes and Reads separated. It can give you the chance to make the Queries more efficient since normally in a Cluster the 90% of the traffic
+is for Queries.
 
 In PaymentAPI I implemented Handler for Commands and Service to deal with Queries.
 
-* **Handler**: Receive commands and transform the Command into Domain model, to pass the responsibility to the domain, and finally into the infrastructure.
-* **Service**: Receive Queries and invoke directly to the DAO in the infrastructure layer.
+* **Handler**: Receives commands and transforms the Command into Domain model, to pass the responsibility to the domain, and finally into the infrastructure.
+* **Service**: Receives Queries and invokes directly to the DAO in the infrastructure layer.
 
 ### Event Sourcing
 
-Event sourcing it's design patter where you work with Events. The main idea Event sourcing is to keep the state of your program, 
-persist every action that happens in your program, and all that without mutate previous state.
+Event sourcing is a design pattern where you work with Events. The main idea of Event sourcing is to keep and persist the state of your program, without mutating previous states.
 
-That means that with Event sourcing I'm not deleting any data in our system, giving us the possibility to have an historical about the different state of one Payment.
+That means that with Event sourcing I'm not deleting any data in the system, giving us the possibility to have an historical about the different state of one Payment.
 
-In PaymentAPI I implemented together with CQRS this patter to allow rehydrate of event and historical of data.
+In PaymentAPI, Event sourcing together with CQRS, allow us rehydrate of events in order to keep state and have historical data.
 
 ### API
 
-The design of the API it's based on Restful design, so for Queries I used **GET**, for create **POST**, update **PUT** and delete **DELETE**
+The design of the API is based on Restful design, so for Queries I used **GET**, for create **POST**, update **PUT** and delete **DELETE**
 
-Since the root of the endpoints its `/v1/payment` many of the endpoints does not require any extra word, only arguments as `Query param`
+Since the root of the endpoints is `/v1/payment` many of the endpoints do not require any extra word, only arguments as `Query param`
 
 ```.java
 @Path("/v1/payment")
@@ -64,7 +63,7 @@ public class PaymentResource {
 
 ![My image](img/testPyramid.png)
 
-To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
+`To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
 In our application I invested around 70% of the time implementing the test framework, from the most concrete type of testing(Unit) to higher level of Integration.
