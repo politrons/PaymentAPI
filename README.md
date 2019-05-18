@@ -37,16 +37,39 @@ That means that with Event sourcing we are not deleting any data in our system, 
 
 In PaymentAPI we implement together with CQRS this patter to allow rehydrate of event and historical of data.
 
+### API
+
+The design of the API it's based on Restful design, so for Queries we use **GET**, for create **POST**, update **PUT** and delete **DELETE**
+
+Since the root of the endpoints its `/v1/payment` many of the endpoints does not require any extra word, only arguments as `Query param`
+
+```.java
+@Path("/v1/payment")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class PaymentResource {
+
+    @GET
+    @Path("/{paymentId}")
+    public CompletionStage<PaymentResponse<?>> fetchPaymentById(@PathParam("paymentId") String id)
+    
+    
+    @POST
+    @Path("/")
+    public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand)     
+}
+```
+
 ## Testing
 
-`To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
+To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
 In our application we invest around 70% of the time implementing the test framework, from the most concrete type of testing(Unit) to higher level of Integration.
 
 * **Unit**: We use JUnit5 together with Mockito to Mock external resources of your class
 * **Integration**: We use Quarkus server, which include a very nice Test framework to do BDD and run the application and test all layers of your application.
-Just to keep clear, the IT test are just a prove that my Unit test are well designed and the Mock behaves as expect. None IT test it should fail ever. And if it does, 
+Just to be clear, the IT test are just a prove that our Unit test are well designed and the Mock behaves as we expect. None IT test it should fail ever. And if it does, 
 you have to reproduce it in Unit test.
 
 ## Technology Stack
@@ -69,9 +92,15 @@ Finally as Connector and Database I choose Cassandra since it's a good choice fo
 * **Infrastructure**: Orika, Vavr, Orika, Cassandra, Mockito.
 
 
-## Use  
+## Use
 
-Once that you have your project created, you just need to run the compile and run command of mvn quarkus
+To run the Unit and Integration test, just go into the root program and run the command:
+
+```
+mvn clean install
+```
+
+Once that you have your project tested, you just need to run the application. Go to the application module and run the command:
 
 ```
 ./mvnw compile quarkus:dev`
