@@ -1,5 +1,6 @@
 package com.politrons.application.resources;
 
+import com.politrons.infrastructure.CassandraConnector;
 import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
@@ -18,8 +19,7 @@ public class PaymentHealthCheck implements HealthCheck {
     @Override
     public HealthCheckResponse call() {
         return HealthCheckResponse.named("Payment API health check").up()
-                .withData("Oracle database", "running")
-                .withData("Cassandra database", "running")
+                .withData("Cassandra database running:", CassandraConnector.isStarted())
                 .build();
     }
 }
