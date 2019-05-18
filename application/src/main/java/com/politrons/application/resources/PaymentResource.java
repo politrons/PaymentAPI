@@ -98,9 +98,10 @@ public class PaymentResource {
     }
 
     @DELETE
-    @Path("/")
-    public CompletionStage<String> deletePayment() {
-        return null;
+    @Path("/{paymentId}")
+    public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId) {
+         handler.deletePayment(paymentId);
+         return null;
     }
 
 

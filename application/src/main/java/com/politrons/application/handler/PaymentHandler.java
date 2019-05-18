@@ -15,4 +15,5 @@ public interface PaymentHandler {
 
     Future<Either<ErrorPayload,String>> updatePayment(UpdatePaymentCommand addPaymentCommand);
 
+    Future<Either<ErrorPayload,String>> deletePayment(String paymentId);
 }

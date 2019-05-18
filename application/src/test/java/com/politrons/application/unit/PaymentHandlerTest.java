@@ -35,7 +35,7 @@ class PaymentHandlerTest {
 
     @BeforeEach
     void setup() {
-         paymentHandler = new PaymentHandlerImpl(paymentRepository);
+        paymentHandler = new PaymentHandlerImpl(paymentRepository);
     }
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -56,6 +56,22 @@ class PaymentHandlerTest {
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.updatePayment(updatePaymentCommand);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void deletePaymentHandler() {
+        when(paymentRepository.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(new PaymentStateAggregateRoot())));
+        when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        Future<Either<ErrorPayload, String>> eithers = paymentHandler.deletePayment("123");
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void deletePaymentHandlerWithWrongEventId() {
+        when(paymentRepository.fetchPayment(any(String.class))).thenReturn(Future.failed(new IllegalArgumentException()));
+        Future<Either<ErrorPayload, String>> eithers = paymentHandler.deletePayment("123");
+        assertTrue(eithers.get().isLeft());
     }
 
 }

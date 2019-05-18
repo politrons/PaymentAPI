@@ -33,6 +33,7 @@ public class PaymentHandlerImpl implements PaymentHandler {
     @Inject
     PaymentRepository paymentRepository;
 
+
     /**
      * Handler to receive a Command to add a payment and return the id of the operation.
      * <p>
@@ -64,19 +65,36 @@ public class PaymentHandlerImpl implements PaymentHandler {
         return upsertPayment(updatePaymentCommand, PaymentStateAggregateRoot::update);
     }
 
+    @Override
+    public Future<Either<ErrorPayload, String>> deletePayment(String eventId) {
+        return paymentRepository.fetchPayment(eventId)
+                .recover(API::Left)
+                .flatMap(either -> Match(either).of(
+                        Case($Right($()), paymentStateAggregateRoot ->
+                                paymentRepository.persistPayment(PaymentStateAggregateRoot.delete(paymentStateAggregateRoot))
+                                        .map(this::processRepositoryResponse)),
+                        Case($Left($()), t -> Future.of(() -> Left(new ErrorPayload(500, t.getMessage()))))
+                ));
+    }
+
     /**
      * Genetic method to receive the command and a function to be transformed into domain model and being persisted using the
      * repository of infrastructure layer.
+     *
      * @param paymentCommand generic command for create/update
-     * @param func generic to apply and return the [PaymentStateAggregateRoot]
+     * @param func           generic to apply and return the [PaymentStateAggregateRoot]
      * @return
      */
     private Future<Either<ErrorPayload, String>> upsertPayment(PaymentCommand paymentCommand,
                                                                Function1<PaymentInfo, PaymentStateAggregateRoot> func) {
         return paymentRepository.persistPayment(getPaymentAggregateRoot(paymentCommand, func))
-                .map(either -> Match(either).of(
-                        Case($Right($()), API::Right),
-                        Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage())))));
+                .map(this::processRepositoryResponse);
+    }
+
+    private Either<ErrorPayload, String> processRepositoryResponse(Either<Throwable, String> either) {
+        return Match(either).of(
+                Case($Right($()), API::Right),
+                Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage()))));
     }
 
     private PaymentStateAggregateRoot getPaymentAggregateRoot(PaymentCommand updatePaymentCommand,

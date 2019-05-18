@@ -43,4 +43,14 @@ public class PaymentRepositoryImpl implements PaymentRepository {
         return paymentDAO.addPayment(paymentAdded);
     }
 
+    /**
+     * Proxy method to be used from handler by delete Payment to get the payment first from the Database.
+     * @param id of the eventId
+     * @return The PaymentStateAggregateRoot to change state as deleted and create a new Event.
+     */
+    @Override
+    public Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id) {
+        return paymentDAO.fetchPayment(id);
+    }
+
 }

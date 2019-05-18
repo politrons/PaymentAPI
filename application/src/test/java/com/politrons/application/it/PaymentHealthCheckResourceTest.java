@@ -24,17 +24,17 @@ import static org.hamcrest.CoreMatchers.is;
 @QuarkusTest
 class PaymentHealthCheckResourceTest {
 
-    @BeforeAll
-    static void init() {
-        CassandraConnector.start();
-    }
+//    @BeforeAll
+//    static void init() {
+//        CassandraConnector.start();
+//    }
+//
+//    @AfterAll
+//    static void stop() {
+//        CassandraConnector.stop();
+//    }
 
-    @AfterAll
-    static void stop() {
-        CassandraConnector.stop();
-    }
-
-    @Test
+//    @Test
     void healthCheckEndpoint() {
         given()
                 .when().get("/health")

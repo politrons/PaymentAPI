@@ -26,10 +26,12 @@ object CassandraConnector {
   def isStarted(): Boolean = session != null && !session.isClosed
 
   def start(): Unit = {
-    val cassandraFactory = new LocalCassandraFactory
-    cassandra = cassandraFactory.create()
-    cassandra.start()
-    initCassandra()
+    if(!isStarted()){
+      val cassandraFactory = new LocalCassandraFactory
+      cassandra = cassandraFactory.create()
+      cassandra.start()
+      initCassandra()
+    }
   }
 
   def stop() {
