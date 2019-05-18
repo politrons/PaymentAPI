@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddPaymentResponse<T> {
+public class PaymentResponse<T> {
 
     int code;
     T payload;

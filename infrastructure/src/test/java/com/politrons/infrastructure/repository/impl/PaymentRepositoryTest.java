@@ -43,15 +43,6 @@ public class PaymentRepositoryTest {
         assertFalse(eithers.get().right().get().isEmpty());
     }
 
-    @Test
-    void fetchPaymentEvent() {
-        PaymentAggregateRoot paymentAggregateRoot = new PaymentAggregateRoot("myCustomUUID", "payment", 0, getPaymentInfo());
-        when(paymentDAO.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(paymentAggregateRoot)));
-        Future<Either<Throwable, PaymentAggregateRoot>> eithers = paymentRepository.fetchPayment("1981");
-        assertTrue(eithers.get().isRight());
-        assertEquals(eithers.get().right().get().getId(), "myCustomUUID");
-    }
-
     private PaymentInfo getPaymentInfo() {
         DebtorParty debtorParty = getDebtorParty();
         BeneficiaryParty beneficiaryParty = getBeneficiaryParty();

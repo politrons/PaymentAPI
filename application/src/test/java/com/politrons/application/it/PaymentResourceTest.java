@@ -2,7 +2,6 @@ package com.politrons.application.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.application.JsonUtils;
-import com.politrons.application.model.payload.response.AddPaymentResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,7 @@ package com.politrons.application.resources;
 
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
-import com.politrons.application.model.payload.response.AddPaymentResponse;
+import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,16 +54,16 @@ public class PaymentResource {
      * Endpoint to persist a payment. We receive a AddPaymentCommand which after being passed into the domain layer
      * it's persisted using the infra layer.
      * @param addPaymentCommand that contains the information of the payment to be created
-     * @return a Future of the AddPaymentResponse with the operation code and the payload
+     * @return a Future of the PaymentResponse with the operation code and the payload
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
-    public CompletionStage<AddPaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
+    public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
         return handler.addPayment(addPaymentCommand)
                 .map(either -> Match(either).of(
-                        Case($Right($()), id -> new AddPaymentResponse<>(200, id)),
-                        Case($Left($()), errorPayload -> new AddPaymentResponse<>(errorPayload.code, errorPayload.cause))))
+                        Case($Right($()), id -> new PaymentResponse<>(200, id)),
+                        Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause))))
                 .toCompletableFuture();
     }
 

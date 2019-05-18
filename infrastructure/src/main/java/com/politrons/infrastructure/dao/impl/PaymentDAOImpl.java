@@ -30,6 +30,10 @@ public class PaymentDAOImpl implements PaymentDAO {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Not perfect, but we initialize the connector and start the Cassandra embedded here.
+     * Please do not do this in production!. This is just to have the connector up and running fast!.
+     */
     @PostConstruct
     public void initConnector() {
         CassandraConnector.start();

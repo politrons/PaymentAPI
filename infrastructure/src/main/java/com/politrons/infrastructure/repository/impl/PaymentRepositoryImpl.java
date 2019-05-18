@@ -27,17 +27,18 @@ public class PaymentRepositoryImpl implements PaymentRepository {
         this.paymentDAO =paymentDAO;
     }
 
+    /**
+     * Function responsible from the transformation from the AggregateRoot of the domain layer
+     * into the Event to be persisted.
+     * @param paymentAggregateRoot domain model to be transform into event.
+     * @return The id of the transaction for futures fetch.
+     */
     @Override
     public Future<Either<Throwable, String>> addPayment(PaymentAggregateRoot paymentAggregateRoot) {
         mapperFactory.classMap(PaymentAggregateRoot.class, PaymentAdded.class);
         MapperFacade mapper = mapperFactory.getMapperFacade();
         PaymentAdded paymentAdded = mapper.map(paymentAggregateRoot, PaymentAdded.class);
         return paymentDAO.addPayment(paymentAdded);
-    }
-
-    @Override
-    public Future<Either<Throwable, PaymentAggregateRoot>> fetchPayment(String id) {
-        return paymentDAO.fetchPayment(id);
     }
 
 }
