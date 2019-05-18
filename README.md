@@ -39,7 +39,7 @@ In PaymentAPI we implement together with CQRS this patter to allow rehydrate of 
 
 ## Testing
 
-"To go fast you have to go well" this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
+`To go fast you have to go well` this quote of Robert C. Martin express perfectly what TDD and BDD is. You should first think in all corner cases of your program and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
 In our application we invest around 70% of the time implementing the test framework, from the most concrete type of testing(Unit) to higher level of Integration.
