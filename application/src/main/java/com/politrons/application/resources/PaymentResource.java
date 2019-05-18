@@ -3,15 +3,16 @@ package com.politrons.application.resources;
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.model.command.AddPaymentCommand;
 import com.politrons.application.model.command.UpdatePaymentCommand;
+import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
+import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import static io.vavr.API.*;
@@ -45,7 +46,7 @@ public class PaymentResource {
      * Only from domain into Payload to make our application not too much couple with domain.
      *
      * @param id of the payment to fetch
-     * @return the
+     * @return a PaymentResponse with the operation code and the payload as [PaymentStatePayload]
      */
     @GET
     @Path("/{paymentId}")
@@ -70,30 +71,43 @@ public class PaymentResource {
      * it's persisted using the infra layer.
      *
      * @param addPaymentCommand that contains the information of the payment to be created
-     * @return a Future of the PaymentResponse with the operation code and the payload
+     * @return a PaymentResponse with the operation code and the payload as eventId
      */
     @POST
     @Path("/")
     public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
         return handler.addPayment(addPaymentCommand)
-                .map(either -> Match(either).of(
-                        Case($Right($()), id -> new PaymentResponse<>(200, id)),
-                        Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause))))
+                .map(this::matchResponse)
                 .toCompletableFuture();
     }
 
+    /**
+     * Endpoint where er receive the paymentId from the previous event as query param, and in the body of the request
+     * the [UpdatePaymentCommand] to create a new Event with the new data updated.
+     * @param paymentId of the previous event created
+     * @param updatePaymentCommand the new data to create a new event.
+     * @return a PaymentResponse with the operation code and the payload as eventId
+     */
     @PUT
     @Path("/{paymentId}")
-    public CompletionStage<String> updatePayment(@PathParam("paymentId") String id, UpdatePaymentCommand updatePaymentCommand) {
-        updatePaymentCommand.setPaymentId(id);
-        handler.updatePayment(updatePaymentCommand);
-        return CompletableFuture.completedFuture("\"code\":200,\"");
+    public CompletionStage<PaymentResponse<String>> updatePayment(@PathParam("paymentId") String paymentId, UpdatePaymentCommand updatePaymentCommand) {
+        updatePaymentCommand.setPaymentId(paymentId);
+        return handler.updatePayment(updatePaymentCommand)
+                .map(this::matchResponse)
+                .toCompletableFuture();
     }
 
     @DELETE
     @Path("/")
     public CompletionStage<String> deletePayment() {
         return null;
+    }
+
+
+    private PaymentResponse<String> matchResponse(Either<ErrorPayload, String> either) {
+        return Match(either).of(
+                Case($Right($()), eventId -> new PaymentResponse<>(200, eventId)),
+                Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause)));
     }
 
 }

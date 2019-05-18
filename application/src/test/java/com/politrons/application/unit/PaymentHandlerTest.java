@@ -5,6 +5,7 @@ import com.politrons.application.JsonUtils;
 import com.politrons.application.handler.PaymentHandler;
 import com.politrons.application.handler.impl.PaymentHandlerImpl;
 import com.politrons.application.model.command.AddPaymentCommand;
+import com.politrons.application.model.command.UpdatePaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.repository.PaymentRepository;
@@ -44,6 +45,15 @@ class PaymentHandlerTest {
         when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.paymentRequest(), AddPaymentCommand.class);
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.addPayment(addPaymentCommand);
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void updatePaymentHandler() throws IOException {
+        when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        UpdatePaymentCommand updatePaymentCommand = mapper.readValue(JsonUtils.paymentRequest(), UpdatePaymentCommand.class);
+        Future<Either<ErrorPayload, String>> eithers = paymentHandler.updatePayment(updatePaymentCommand);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }
