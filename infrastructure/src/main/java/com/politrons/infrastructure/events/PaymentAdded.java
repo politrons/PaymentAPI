@@ -10,11 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentAdded {
-
-    private String id;
-    private String type;
-    private float version;
+public class PaymentAdded implements PaymentEvent{
+    String id;
+    String type;
+    float version;
     PaymentInfoDTO paymentInfo;
-
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.events.PaymentAdded;
-import io.vavr.Tuple2;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import org.junit.jupiter.api.AfterAll;
@@ -33,15 +32,47 @@ public class PaymentDAOTest extends PaymentDAOUtilsTest {
     //     Add payment    //
     //####################//
     @Test
-    void upsertPaymentEvent() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.upsertPayment(getPaymentAddedEvent());
+    void paymentAddedEvent() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentAddedEvent(getPaymentAddedEvent());
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }
 
     @Test
-    void upsertPaymentEventWithWrongJson() {
-        Future<Either<Throwable, String>> eithers = paymentDAO.upsertPayment(null);
+    void paymentAddedEventWithWrongJson() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentAddedEvent(null);
+        assertTrue(eithers.get().isLeft());
+    }
+
+    //####################//
+    //     Update payment    //
+    //####################//
+    @Test
+    void paymentUpdatedEvent() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentUpdatedEvent(getPaymentUpdatedEvent());
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void paymentUpdatedEventWithWrongJson() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentUpdatedEvent(null);
+        assertTrue(eithers.get().isLeft());
+    }
+
+    //####################//
+    //     Delete payment    //
+    //####################//
+    @Test
+    void paymentDeletedEvent() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentDeletedEvent(getPaymentDeletedEvent());
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void paymentDeletedEventWithWrongJson() {
+        Future<Either<Throwable, String>> eithers = paymentDAO.persistPaymentDeletedEvent(null);
         assertTrue(eithers.get().isLeft());
     }
 

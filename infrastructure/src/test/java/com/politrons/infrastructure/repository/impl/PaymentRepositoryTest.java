@@ -7,6 +7,8 @@ import com.politrons.domain.entities.PaymentInfo;
 import com.politrons.domain.entities.SponsorParty;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
+import com.politrons.infrastructure.events.PaymentDeleted;
+import com.politrons.infrastructure.events.PaymentUpdated;
 import com.politrons.infrastructure.repository.PaymentRepository;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
@@ -38,8 +40,26 @@ public class PaymentRepositoryTest {
     @Test
     void addPaymentEvent() {
         PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "payment", 0, getPaymentInfo());
-        when(paymentDAO.upsertPayment(any(PaymentAdded.class))).thenReturn(Future.of(() -> Right("1981")));
-        Future<Either<Throwable, String>> eithers = paymentRepository.persistPayment(paymentStateAggregateRoot);
+        when(paymentDAO.persistPaymentAddedEvent(any(PaymentAdded.class))).thenReturn(Future.of(() -> Right("1981")));
+        Future<Either<Throwable, String>> eithers = paymentRepository.addPayment(paymentStateAggregateRoot);
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void updatePaymentEvent() {
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "payment", 0, getPaymentInfo());
+        when(paymentDAO.persistPaymentUpdatedEvent(any(PaymentUpdated.class))).thenReturn(Future.of(() -> Right("1981")));
+        Future<Either<Throwable, String>> eithers = paymentRepository.updatePayment(paymentStateAggregateRoot);
+        assertTrue(eithers.get().isRight());
+        assertFalse(eithers.get().right().get().isEmpty());
+    }
+
+    @Test
+    void deletePaymentEvent() {
+        PaymentStateAggregateRoot paymentStateAggregateRoot = new PaymentStateAggregateRoot("id", "payment", 0, getPaymentInfo());
+        when(paymentDAO.persistPaymentDeletedEvent(any(PaymentDeleted.class))).thenReturn(Future.of(() -> Right("1981")));
+        Future<Either<Throwable, String>> eithers = paymentRepository.deletePayment(paymentStateAggregateRoot);
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
     }

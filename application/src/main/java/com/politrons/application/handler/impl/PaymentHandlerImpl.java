@@ -51,7 +51,8 @@ public class PaymentHandlerImpl implements PaymentHandler {
      */
     @Override
     public Future<Either<ErrorPayload, String>> addPayment(AddPaymentCommand addPaymentCommand) {
-        return upsertPayment(addPaymentCommand, PaymentStateAggregateRoot::create);
+        return paymentRepository.addPayment(getPaymentAggregateRoot(addPaymentCommand, PaymentStateAggregateRoot::create))
+                .map(this::processRepositoryResponse);
     }
 
     /**
@@ -62,33 +63,27 @@ public class PaymentHandlerImpl implements PaymentHandler {
      */
     @Override
     public Future<Either<ErrorPayload, String>> updatePayment(UpdatePaymentCommand updatePaymentCommand) {
-        return upsertPayment(updatePaymentCommand, PaymentStateAggregateRoot::update);
+        return paymentRepository.updatePayment(getPaymentAggregateRoot(updatePaymentCommand, PaymentStateAggregateRoot::update))
+                .map(this::processRepositoryResponse);
     }
 
+    /**
+     * Handler to get the the previous event created using the id, then we change the state as [deleted] and
+     * finally we delegate the creation of the new event into the infrastructure layer."
+     *
+     * @param eventId from the previous event to fetch and change state.
+     * @return a new id of the row of the new Event with the new state.
+     */
     @Override
     public Future<Either<ErrorPayload, String>> deletePayment(String eventId) {
         return paymentRepository.fetchPayment(eventId)
                 .recover(API::Left)
                 .flatMap(either -> Match(either).of(
                         Case($Right($()), paymentStateAggregateRoot ->
-                                paymentRepository.persistPayment(PaymentStateAggregateRoot.delete(paymentStateAggregateRoot))
+                                paymentRepository.deletePayment(PaymentStateAggregateRoot.delete(paymentStateAggregateRoot))
                                         .map(this::processRepositoryResponse)),
                         Case($Left($()), t -> Future.of(() -> Left(new ErrorPayload(500, t.getMessage()))))
                 ));
-    }
-
-    /**
-     * Genetic method to receive the command and a function to be transformed into domain model and being persisted using the
-     * repository of infrastructure layer.
-     *
-     * @param paymentCommand generic command for create/update
-     * @param func           generic to apply and return the [PaymentStateAggregateRoot]
-     * @return
-     */
-    private Future<Either<ErrorPayload, String>> upsertPayment(PaymentCommand paymentCommand,
-                                                               Function1<PaymentInfo, PaymentStateAggregateRoot> func) {
-        return paymentRepository.persistPayment(getPaymentAggregateRoot(paymentCommand, func))
-                .map(this::processRepositoryResponse);
     }
 
     private Either<ErrorPayload, String> processRepositoryResponse(Either<Throwable, String> either) {
@@ -97,48 +92,52 @@ public class PaymentHandlerImpl implements PaymentHandler {
                 Case($Left($()), t -> Left(new ErrorPayload(500, t.getMessage()))));
     }
 
-    private PaymentStateAggregateRoot getPaymentAggregateRoot(PaymentCommand updatePaymentCommand,
+    //#############################//
+    //       DOMAIN FACTORY        //
+    //#############################//
+
+    private PaymentStateAggregateRoot getPaymentAggregateRoot(PaymentCommand paymentCommand,
                                                               Function1<PaymentInfo, PaymentStateAggregateRoot> changeStateFunc) {
-        PaymentInfo paymentInfo = getPaymentInfo(updatePaymentCommand);
+        PaymentInfo paymentInfo = getPaymentInfo(paymentCommand);
         return changeStateFunc.apply(paymentInfo);
     }
 
-    private PaymentInfo getPaymentInfo(PaymentCommand addPaymentCommand) {
-        return PaymentInfo.create(addPaymentCommand.getAmount(),
-                addPaymentCommand.getCurrency(),
-                addPaymentCommand.getPaymentId(),
-                addPaymentCommand.getPaymentPurpose(),
-                addPaymentCommand.getPaymentType(),
-                addPaymentCommand.getProcessingDate(),
-                addPaymentCommand.getReference(),
-                addPaymentCommand.getSchemePaymentSubType(),
-                addPaymentCommand.getSchemePaymentType(),
-                getDebtorParty(addPaymentCommand),
-                getSponsorParty(addPaymentCommand),
-                getBeneficiaryParty(addPaymentCommand));
+    private PaymentInfo getPaymentInfo(PaymentCommand paymentCommand) {
+        return PaymentInfo.create(paymentCommand.getAmount(),
+                paymentCommand.getCurrency(),
+                paymentCommand.getPaymentId(),
+                paymentCommand.getPaymentPurpose(),
+                paymentCommand.getPaymentType(),
+                paymentCommand.getProcessingDate(),
+                paymentCommand.getReference(),
+                paymentCommand.getSchemePaymentSubType(),
+                paymentCommand.getSchemePaymentType(),
+                getDebtorParty(paymentCommand),
+                getSponsorParty(paymentCommand),
+                getBeneficiaryParty(paymentCommand));
     }
 
-    private SponsorParty getSponsorParty(PaymentCommand addPaymentCommand) {
-        return SponsorParty.create(addPaymentCommand.getSponsorParty().getAccountNumber(),
-                addPaymentCommand.getSponsorParty().getBankId(),
-                addPaymentCommand.getSponsorParty().getBankIdCode());
+    private SponsorParty getSponsorParty(PaymentCommand paymentCommand) {
+        return SponsorParty.create(paymentCommand.getSponsorParty().getAccountNumber(),
+                paymentCommand.getSponsorParty().getBankId(),
+                paymentCommand.getSponsorParty().getBankIdCode());
     }
 
-    private DebtorParty getDebtorParty(PaymentCommand addPaymentCommand) {
-        return DebtorParty.create(addPaymentCommand.getDebtorParty().getAccountName(),
-                addPaymentCommand.getDebtorParty().getAccountNumber(),
-                addPaymentCommand.getDebtorParty().getAccountType(),
-                addPaymentCommand.getDebtorParty().getAddress(),
-                addPaymentCommand.getDebtorParty().getBankId(),
-                addPaymentCommand.getDebtorParty().getName());
+    private DebtorParty getDebtorParty(PaymentCommand paymentCommand) {
+        return DebtorParty.create(paymentCommand.getDebtorParty().getAccountName(),
+                paymentCommand.getDebtorParty().getAccountNumber(),
+                paymentCommand.getDebtorParty().getAccountType(),
+                paymentCommand.getDebtorParty().getAddress(),
+                paymentCommand.getDebtorParty().getBankId(),
+                paymentCommand.getDebtorParty().getName());
     }
 
-    private BeneficiaryParty getBeneficiaryParty(PaymentCommand addPaymentCommand) {
-        return BeneficiaryParty.create(addPaymentCommand.getBeneficiaryParty().getAccountName(),
-                addPaymentCommand.getBeneficiaryParty().getAccountNumber(),
-                addPaymentCommand.getBeneficiaryParty().getAccountType(),
-                addPaymentCommand.getBeneficiaryParty().getAddress(),
-                addPaymentCommand.getBeneficiaryParty().getBankId(),
-                addPaymentCommand.getBeneficiaryParty().getName());
+    private BeneficiaryParty getBeneficiaryParty(PaymentCommand paymentCommand) {
+        return BeneficiaryParty.create(paymentCommand.getBeneficiaryParty().getAccountName(),
+                paymentCommand.getBeneficiaryParty().getAccountNumber(),
+                paymentCommand.getBeneficiaryParty().getAccountType(),
+                paymentCommand.getBeneficiaryParty().getAddress(),
+                paymentCommand.getBeneficiaryParty().getBankId(),
+                paymentCommand.getBeneficiaryParty().getName());
     }
 }

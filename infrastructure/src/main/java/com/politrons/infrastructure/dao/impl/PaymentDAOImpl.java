@@ -7,6 +7,9 @@ import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
+import com.politrons.infrastructure.events.PaymentDeleted;
+import com.politrons.infrastructure.events.PaymentEvent;
+import com.politrons.infrastructure.events.PaymentUpdated;
 import io.vavr.API;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
@@ -31,27 +34,19 @@ public class PaymentDAOImpl implements PaymentDAO {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-
-    /**
-     * Function to receive the event [PaymentAdded] and we persist into Cassandra row adding the UUID, timestamp and Event in json format.
-     * We are doing Event sourcing, which means the internal id the of event it will remain intact for future rehydrate, and we will create a new UUID per
-     * transaction inserted in Cassandra.
-     *
-     * @param paymentAdded Event to be transform into json and being persited.
-     * @return the id of the row
-     */
     @Override
-    public Future<Either<Throwable, String>> upsertPayment(PaymentAdded paymentAdded) {
-        String uuid = createNewUUID();
-        return Match(Try(() -> mapper.writeValueAsString(paymentAdded))
-                .flatMap(event -> Try.of(() -> getAddPaymentQuery(uuid, getTimestampMillis(), event))
-                        .map(query -> Future.of(() -> CassandraConnector.addPayment(query))
-                                .map(maybeResultSet -> transformResultSetToId(maybeResultSet, uuid))))).of(
-                Case($Success($()), future -> future),
-                Case($Failure($()), throwable -> {
-                    logger.error("Error in add payment DAO mapping event to json. Caused by:" + throwable.getCause());
-                    return Future.of(() -> Left(throwable));
-                }));
+    public Future<Either<Throwable, String>> persistPaymentAddedEvent(PaymentAdded paymentAdded) {
+        return upsertPayment(paymentAdded);
+    }
+
+    @Override
+    public Future<Either<Throwable, String>> persistPaymentUpdatedEvent(PaymentUpdated paymentUpdated) {
+        return upsertPayment(paymentUpdated);
+    }
+
+    @Override
+    public Future<Either<Throwable, String>> persistPaymentDeletedEvent(PaymentDeleted paymentAdded) {
+        return upsertPayment(paymentAdded);
     }
 
     /**
@@ -70,6 +65,27 @@ public class PaymentDAOImpl implements PaymentDAO {
     public Future<Either<Throwable, List<PaymentStateAggregateRoot>>> fetchAllPayments() {
         return Future.of(() -> CassandraConnector.fetchAllPayments(fetchAllPaymentsQuery()))
                 .map(this::transformResultSetToPaymentAggregateRoots);
+    }
+
+    /**
+     * Function to receive the event [PaymentEvent] and we persist into Cassandra row adding the UUID, timestamp and Event in json format.
+     * We are doing Event sourcing, which means the internal id the of event it will remain intact for future rehydrate, and we will create a new UUID per
+     * transaction inserted in Cassandra.
+     *
+     * @param paymentEvent Event to be transform into json and being persisted.
+     * @return the id of the row
+     */
+    private Future<Either<Throwable, String>> upsertPayment(PaymentEvent paymentEvent) {
+        String uuid = createNewUUID();
+        return Match(Try(() -> mapper.writeValueAsString(paymentEvent))
+                .flatMap(event -> Try.of(() -> getAddPaymentQuery(uuid, getTimestampMillis(), event))
+                        .map(query -> Future.of(() -> CassandraConnector.addPayment(query))
+                                .map(maybeResultSet -> transformResultSetToId(maybeResultSet, uuid))))).of(
+                Case($Success($()), future -> future),
+                Case($Failure($()), throwable -> {
+                    logger.error("Error in add payment DAO mapping event to json. Caused by:" + throwable.getCause());
+                    return Future.of(() -> Left(throwable));
+                }));
     }
 
     private Either<Throwable, List<PaymentStateAggregateRoot>> transformResultSetToPaymentAggregateRoots(Try<ResultSet> maybeResultSet) {

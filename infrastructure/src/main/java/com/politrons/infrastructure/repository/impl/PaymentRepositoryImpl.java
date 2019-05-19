@@ -1,6 +1,8 @@
 package com.politrons.infrastructure.repository.impl;
 
 import com.politrons.domain.PaymentStateAggregateRoot;
+import com.politrons.infrastructure.events.PaymentDeleted;
+import com.politrons.infrastructure.events.PaymentUpdated;
 import com.politrons.infrastructure.repository.PaymentRepository;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
@@ -28,18 +30,48 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     /**
-     * Function responsible from the transformation from the AggregateRoot of the domain layer
-     * into the Event to be persisted.
+     * Method responsible for the transformation from the AggregateRoot of the domain layer
+     * into the PaymentAdded Event to be persisted.
      *
      * @param paymentStateAggregateRoot domain model to be transform into event.
      * @return The id of the transaction for futures fetch.
      */
     @Override
-    public Future<Either<Throwable, String>> persistPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+    public Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
         mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentAdded.class);
         MapperFacade mapper = mapperFactory.getMapperFacade();
         PaymentAdded paymentAdded = mapper.map(paymentStateAggregateRoot, PaymentAdded.class);
-        return paymentDAO.upsertPayment(paymentAdded);
+        return paymentDAO.persistPaymentAddedEvent(paymentAdded);
+    }
+
+    /**
+     * Method responsible for the transformation from the AggregateRoot of the domain layer
+     * into the PaymentUpdated Event to be persisted.
+     *
+     * @param paymentStateAggregateRoot domain model to be transform into event.
+     * @return The id of the transaction for futures fetch.
+     */
+    @Override
+    public Future<Either<Throwable, String>> updatePayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentUpdated.class);
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        PaymentUpdated paymentUpdated = mapper.map(paymentStateAggregateRoot, PaymentUpdated.class);
+        return paymentDAO.persistPaymentUpdatedEvent(paymentUpdated);
+    }
+
+    /**
+     * Method responsible for the transformation from the AggregateRoot of the domain layer
+     * into the PaymentDeleted Event to be persisted.
+     *
+     * @param paymentStateAggregateRoot domain model to be transform into event.
+     * @return The id of the transaction for futures fetch.
+     */
+    @Override
+    public Future<Either<Throwable, String>> deletePayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
+        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentDeleted.class);
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        PaymentDeleted paymentDeleted = mapper.map(paymentStateAggregateRoot, PaymentDeleted.class);
+        return paymentDAO.persistPaymentDeletedEvent(paymentDeleted);
     }
 
     /**

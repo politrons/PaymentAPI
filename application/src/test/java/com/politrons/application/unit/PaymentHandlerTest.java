@@ -42,7 +42,7 @@ class PaymentHandlerTest {
 
     @Test
     void addPaymentHandler() throws IOException {
-        when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        when(paymentRepository.addPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         AddPaymentCommand addPaymentCommand = mapper.readValue(JsonUtils.paymentRequest(), AddPaymentCommand.class);
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.addPayment(addPaymentCommand);
         assertTrue(eithers.get().isRight());
@@ -51,7 +51,7 @@ class PaymentHandlerTest {
 
     @Test
     void updatePaymentHandler() throws IOException {
-        when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        when(paymentRepository.updatePayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         UpdatePaymentCommand updatePaymentCommand = mapper.readValue(JsonUtils.paymentRequest(), UpdatePaymentCommand.class);
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.updatePayment(updatePaymentCommand);
         assertTrue(eithers.get().isRight());
@@ -61,7 +61,7 @@ class PaymentHandlerTest {
     @Test
     void deletePaymentHandler() {
         when(paymentRepository.fetchPayment(any(String.class))).thenReturn(Future.of(() -> Right(new PaymentStateAggregateRoot())));
-        when(paymentRepository.persistPayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
+        when(paymentRepository.deletePayment(any(PaymentStateAggregateRoot.class))).thenReturn(Future.of(() -> Right("1981")));
         Future<Either<ErrorPayload, String>> eithers = paymentHandler.deletePayment("123");
         assertTrue(eithers.get().isRight());
         assertFalse(eithers.get().right().get().isEmpty());
