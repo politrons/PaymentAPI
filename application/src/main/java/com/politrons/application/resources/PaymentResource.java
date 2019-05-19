@@ -59,6 +59,10 @@ public class PaymentResource {
                 .toCompletableFuture();
     }
 
+    /**
+     * Endpoint to fetch all payments.
+     * @return a PaymentResponse with the operation code and the payload as List of PaymentStatePayload
+     */
     @GET
     @Path("/all")
     public CompletionStage<PaymentResponse<?>> fetchAllPayment() {

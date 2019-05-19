@@ -2,6 +2,7 @@ package com.politrons.infrastructure.repository.impl;
 
 import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.events.PaymentDeleted;
+import com.politrons.infrastructure.events.PaymentEvent;
 import com.politrons.infrastructure.events.PaymentUpdated;
 import com.politrons.infrastructure.repository.PaymentRepository;
 import com.politrons.infrastructure.dao.PaymentDAO;
@@ -38,9 +39,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
      */
     @Override
     public Future<Either<Throwable, String>> addPayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
-        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentAdded.class);
-        MapperFacade mapper = mapperFactory.getMapperFacade();
-        PaymentAdded paymentAdded = mapper.map(paymentStateAggregateRoot, PaymentAdded.class);
+        PaymentAdded paymentAdded = transformAggregateRootIntoEvent(paymentStateAggregateRoot, PaymentAdded.class);
         return paymentDAO.persistPaymentAddedEvent(paymentAdded);
     }
 
@@ -53,9 +52,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
      */
     @Override
     public Future<Either<Throwable, String>> updatePayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
-        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentUpdated.class);
-        MapperFacade mapper = mapperFactory.getMapperFacade();
-        PaymentUpdated paymentUpdated = mapper.map(paymentStateAggregateRoot, PaymentUpdated.class);
+        PaymentUpdated paymentUpdated = transformAggregateRootIntoEvent(paymentStateAggregateRoot, PaymentUpdated.class);
         return paymentDAO.persistPaymentUpdatedEvent(paymentUpdated);
     }
 
@@ -68,20 +65,27 @@ public class PaymentRepositoryImpl implements PaymentRepository {
      */
     @Override
     public Future<Either<Throwable, String>> deletePayment(PaymentStateAggregateRoot paymentStateAggregateRoot) {
-        mapperFactory.classMap(PaymentStateAggregateRoot.class, PaymentDeleted.class);
-        MapperFacade mapper = mapperFactory.getMapperFacade();
-        PaymentDeleted paymentDeleted = mapper.map(paymentStateAggregateRoot, PaymentDeleted.class);
+        PaymentDeleted paymentDeleted = transformAggregateRootIntoEvent(paymentStateAggregateRoot, PaymentDeleted.class);
         return paymentDAO.persistPaymentDeletedEvent(paymentDeleted);
     }
 
     /**
      * Proxy method to be used from handler by delete Payment to get the payment first from the Database.
+     *
      * @param id of the eventId
      * @return The PaymentStateAggregateRoot to change state as deleted and create a new Event.
      */
     @Override
     public Future<Either<Throwable, PaymentStateAggregateRoot>> fetchPayment(String id) {
         return paymentDAO.fetchPayment(id);
+    }
+
+    private <T extends PaymentEvent> T transformAggregateRootIntoEvent(PaymentStateAggregateRoot paymentStateAggregateRoot,
+                                                                       Class<? extends PaymentEvent> paymentEventClass) {
+        mapperFactory.classMap(PaymentStateAggregateRoot.class, paymentEventClass);
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        return (T) mapper.map(paymentStateAggregateRoot, paymentEventClass);
+
     }
 
 }
