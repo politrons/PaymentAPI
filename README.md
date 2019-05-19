@@ -119,8 +119,15 @@ mvn clean install
 Once that you have your project tested, you just need to run the application. Go to the application module and run the command:
 
 ```
-./mvnw compile quarkus:dev`
+./mvnw compile quarkus:dev
 ```
+
+Then you will have to run the Cassandra embedded that the project provide.
+
+```
+CassandraConnector.start()
+```
+
  
 ## Health check
 

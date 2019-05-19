@@ -8,6 +8,7 @@ import com.politrons.domain.PaymentStateAggregateRoot;
 import com.politrons.infrastructure.dao.PaymentDAO;
 import com.politrons.infrastructure.events.PaymentAdded;
 import io.vavr.API;
+import io.vavr.collection.Stream;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.*;
@@ -36,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     PaymentDAO paymentDAO;
 
     /**
-     * Function to fetch a payment previously created/updated/deleted.
+     * Method to fetch a payment previously created/updated/deleted.
      *
      * @param id of the payment
      * @return the Domain model PaymentStateAggregateRoot
@@ -51,10 +53,28 @@ public class PaymentServiceImpl implements PaymentService {
                         })));
     }
 
+    /**
+     * Method to fetch all payments made on the system
+     * @return List of [PaymentStatePayload]
+     */
     @Override
     public Future<Either<ErrorPayload, List<PaymentStatePayload>>> fetchAllPayments() {
-        Future<Either<Throwable, List<PaymentStateAggregateRoot>>> eithers = paymentDAO.fetchAllPayments();
-        return null;
+        return paymentDAO.fetchAllPayments()
+                .map(either -> Match(either).of(
+                        Case($Right($()), paymentStateAggregateRootList -> Right(transformPaymentStateAggregateRootListToPayload(paymentStateAggregateRootList))),
+                        Case($Left($()), throwable -> {
+                            logger.error("Error in fetch payment Service. Caused by:" + throwable.getCause());
+                            return Left(new ErrorPayload(500, throwable.getMessage()));
+                        })));
+    }
+
+    /**
+     * Get a list of [PaymentStateAggregateRoot] and transform into a list of [PaymentStatePayload]
+     */
+    private List<PaymentStatePayload> transformPaymentStateAggregateRootListToPayload(List<PaymentStateAggregateRoot> paymentStateAggregateRootList) {
+        return paymentStateAggregateRootList.stream()
+                .map(this::transformPaymentStateAggregateRootToPayload)
+                .collect(Collectors.toList());
     }
 
     /**

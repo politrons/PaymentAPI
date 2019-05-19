@@ -6,6 +6,7 @@ import com.politrons.application.model.command.UpdatePaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
+import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +64,11 @@ public class PaymentResource {
     @Path("/all")
     public CompletionStage<PaymentResponse<?>> fetchAllPayment() {
         logger.debug("Request to get all Payments");
-        service.fetchAllPayments();
-        return null;
+        return service.fetchAllPayments()
+                .map(either -> Match(either).of(
+                        Case($Right($()), paymentStatePayloadList -> new PaymentResponse<>(200, paymentStatePayloadList)),
+                        Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause))))
+                .toCompletableFuture();
     }
 
     /**
@@ -79,7 +83,7 @@ public class PaymentResource {
     public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand) {
         logger.debug("Request to add Payment with command " + addPaymentCommand);
         return handler.addPayment(addPaymentCommand)
-                .map(this::matchResponse)
+                .map(this::matchEventIdResponse)
                 .toCompletableFuture();
     }
 
@@ -98,13 +102,14 @@ public class PaymentResource {
         logger.debug("Request to create update Payment event for paymentId " + paymentId);
         updatePaymentCommand.setPaymentId(paymentId);
         return handler.updatePayment(updatePaymentCommand)
-                .map(this::matchResponse)
+                .map(this::matchEventIdResponse)
                 .toCompletableFuture();
     }
 
     /**
      * Endpoint where er receive the paymentId from the previous event as query param to find the previous event
      * change the state to [deleted] and persist as a new Event.
+     *
      * @param paymentId of the previous event created
      * @return a PaymentResponse with the operation code and the payload as eventId
      */
@@ -113,12 +118,12 @@ public class PaymentResource {
     public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId) {
         logger.debug("Request to create delete Payment event for paymentId " + paymentId);
         return handler.deletePayment(paymentId)
-                .map(this::matchResponse)
+                .map(this::matchEventIdResponse)
                 .toCompletableFuture();
     }
 
 
-    private PaymentResponse<String> matchResponse(Either<ErrorPayload, String> either) {
+    private PaymentResponse<String> matchEventIdResponse(Either<ErrorPayload, String> either) {
         return Match(either).of(
                 Case($Right($()), eventId -> new PaymentResponse<>(200, eventId)),
                 Case($Left($()), errorPayload -> new PaymentResponse<>(errorPayload.code, errorPayload.cause)));
