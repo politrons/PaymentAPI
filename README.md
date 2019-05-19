@@ -34,7 +34,11 @@ Event sourcing is a design pattern where you work with Events. The main idea of 
 
 That means that with Event sourcing I'm not deleting any data in the system, giving us the possibility to have an historical about the different state of one Payment.
 
-In PaymentAPI, Event sourcing together with CQRS, allow us rehydrate of events in order to keep state and have historical data.
+In PaymentAPI, Event sourcing together with CQRS, allow us persist events in order to keep state and have historical data. 
+
+* **PaymentAdded**: Event that keep the state of the creation of a payment.
+* **PaymentUpdated**: Event that keep the state of the change of a payment.
+* **PaymentDeleted**: Event that keep the state of the deletion of a payment.
 
 ### API
 
