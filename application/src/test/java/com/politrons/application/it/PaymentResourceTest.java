@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -115,6 +114,19 @@ class PaymentResourceTest {
         assertEquals(response.getCode(), 200);
         PaymentStatePayload paymentStatePayload = mapper.convertValue(response.getPayload(), PaymentStatePayload.class);
         assertEquals(paymentStatePayload.getType(), "created");
+    }
+
+    @Test
+    void fetchPaymentEndpointWithWrongEventId() {
+        PaymentResponse response = given()
+                .contentType("application/json")
+                .header(new Header("Content-Type", "application/json"))
+                .when().get("/v1/payment/" + "foo")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 500);
     }
 
     @Test
