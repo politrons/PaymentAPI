@@ -53,13 +53,24 @@ Since the root of the endpoints is `/v1/payment` many of the endpoints do not re
 public class PaymentResource {
 
     @GET
+    @Path("/all")
+    public CompletionStage<PaymentResponse<?>> fetchAllPayment() 
+    
+    @GET
     @Path("/{paymentId}")
     public CompletionStage<PaymentResponse<?>> fetchPaymentById(@PathParam("paymentId") String id)
     
-    
     @POST
     @Path("/")
-    public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand)     
+    public CompletionStage<PaymentResponse<String>> addPayment(AddPaymentCommand addPaymentCommand)   
+    
+    @PUT
+    @Path("/{paymentId}")
+    public CompletionStage<PaymentResponse<String>> updatePayment(@PathParam("paymentId") String paymentId,
+                                                                  UpdatePaymentCommand updatePaymentCommand)
+    @DELETE
+    @Path("/{paymentId}")
+    public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId)                                                                        
 }
 ```
 

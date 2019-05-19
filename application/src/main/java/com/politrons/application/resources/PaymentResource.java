@@ -61,7 +61,7 @@ public class PaymentResource {
 
     @GET
     @Path("/all")
-    public CompletionStage<String> fetchAllPayment() {
+    public CompletionStage<PaymentResponse<?>> fetchAllPayment() {
         logger.debug("Request to get all Payments");
         service.fetchAllPayments();
         return null;
