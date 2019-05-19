@@ -3,6 +3,7 @@ package com.politrons.application.it;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.application.JsonUtils;
+import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.dto.BeneficiaryPartyDTO;
 import com.politrons.infrastructure.dto.DebtorPartyDTO;
@@ -20,6 +21,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 class PaymentResourceTest {
@@ -47,39 +49,52 @@ class PaymentResourceTest {
 
     @Test
     void addPaymentEndpoint() {
-        given()
+        PaymentResponse response = given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
                 .body(JsonUtils.paymentRequest())
                 .when().post("/v1/payment/")
                 .then()
                 .statusCode(200)
-                .body(containsString("\"code\":200,\""));
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 200);
+        assertTrue(response.getPayload() instanceof String);
+        assertFalse(((String) response.getPayload()).isEmpty());
+
     }
 
     @Test
     void updatePaymentEndpoint() throws JsonProcessingException {
         String uuid = addMockPayment();
-        given()
+        PaymentResponse response = given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
                 .body(JsonUtils.paymentRequest())
                 .when().put("/v1/payment/" + uuid)
                 .then()
                 .statusCode(200)
-                .body(containsString("\"code\":200,\""));
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 200);
+        assertTrue(response.getPayload() instanceof String);
+        assertFalse(((String) response.getPayload()).isEmpty());
     }
 
     @Test
     void deletePaymentEndpoint() throws JsonProcessingException {
         String uuid = addMockPayment();
-        given()
+        PaymentResponse response = given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
                 .when().delete("/v1/payment/" + uuid)
                 .then()
                 .statusCode(200)
-                .body(containsString("\"code\":200,\""));
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 200);
+        assertTrue(response.getPayload() instanceof String);
+        assertFalse(((String) response.getPayload()).isEmpty());
     }
 
     @Test

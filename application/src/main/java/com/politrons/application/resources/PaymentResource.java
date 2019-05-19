@@ -6,7 +6,6 @@ import com.politrons.application.model.command.UpdatePaymentCommand;
 import com.politrons.application.model.error.ErrorPayload;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.application.service.PaymentService;
-import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
