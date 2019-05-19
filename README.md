@@ -73,6 +73,84 @@ public class PaymentResource {
     public CompletionStage<PaymentResponse<String>> deletePayment(@PathParam("paymentId") String paymentId)                                                                        
 }
 ```
+The request body for Create and Update Payment it has this json format
+
+```
+{
+  "amount": "amount",
+  "currency": "currency",
+  "paymentId": "paymentId",
+  "debtorParty": {
+    "accountName": "accountName",
+    "accountNumber": "accountNumber",
+    "accountType": 0.0,
+    "address": "address",
+    "bankId": "bankId",
+    "name": "name"
+  },
+  "sponsorParty": {
+    "accountNumber": "accountName",
+    "bankId": "bankId",
+    "bankIdCode": "bankCode"
+  },
+  "beneficiaryParty": {
+    "accountName": "accountName",
+    "accountNumber": "accountNumber",
+    "accountType": 0.0,
+    "address": "address",
+    "bankId": "bankId",
+    "name": "name"
+  },
+  "paymentPurpose": "paymentPurpose",
+  "paymentType": "paymentType",
+  "processingDate": "processingDate",
+  "reference": "reference",
+  "schemePaymentSubType": "schemePaymentSubType",
+  "schemePaymentType": "schemePaymentType"
+}
+```
+
+And the json response format for fetch payment has this one.
+
+```
+{
+  "id": "id",
+  "type": "created",
+  "version": 1.0,
+  "paymentInfo": {
+    "amount": "amount",
+    "currency": "currency",
+    "paymentId": "paymentId",
+    "paymentPurpose": "paymentPurpose",
+    "paymentType": "paymentType",
+    "processingDate": "processingDate",
+    "reference": "reference",
+    "schemePaymentSubType": "schemePaymentSubType",
+    "schemePaymentType": "schemePaymentType",
+    "debtorParty": {
+      "accountName": "accountName",
+      "accountNumber": "accountNumber",
+      "accountType": 0.0,
+      "address": "address",
+      "bankId": "bankId",
+      "name": "name"
+    },
+    "sponsorParty": {
+      "accountNumber": "accountName",
+      "bankId": "bankId",
+      "bankIdCode": "bankCode"
+    },
+    "beneficiaryParty": {
+      "accountName": "accountName",
+      "accountNumber": "accountNumber",
+      "accountType": 0.0,
+      "address": "address",
+      "bankId": "bankId",
+      "name": "name"
+    }
+  }
+}
+```
 
 ## Testing
 
