@@ -37,6 +37,7 @@ object CassandraConnector {
   def stop() {
     session.close()
     cluster.close()
+    cassandra.stop()
   }
 
   def addPayment(query: String): Try[ResultSet] = executeQuery(query)
