@@ -81,7 +81,7 @@ public class PaymentResource {
 **To go fast you have to go well** this quote of Robert C. Martin express perfectly what TDD and BDD is. You should think first in all corner cases of your program, and then implement 
 one by one committing every scenario to have a quick feedback about your program.
  
-In our application I invested around 70% of the time implementing the test framework, from the most concrete type of testing(Unit) to higher level of Integration.
+In our application I invested around 70% of the time implementing the test framework, the type of testing implemented are described below.
 
 * **Unit**: I used JUnit5 together with Mockito to Mock external resources of your class.
 * **Integration**: I used Quarkus server, which include a very nice Test framework to do BDD and run the application and test all layers of your application.
