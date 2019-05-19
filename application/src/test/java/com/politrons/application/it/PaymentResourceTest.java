@@ -1,8 +1,10 @@
 package com.politrons.application.it;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.politrons.application.JsonUtils;
+import com.politrons.application.model.payload.payload.PaymentStatePayload;
 import com.politrons.application.model.payload.response.PaymentResponse;
 import com.politrons.infrastructure.CassandraConnector;
 import com.politrons.infrastructure.dto.BeneficiaryPartyDTO;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -100,13 +104,37 @@ class PaymentResourceTest {
     @Test
     void fetchPaymentEndpoint() throws JsonProcessingException {
         String uuid = addMockPayment();
-        given()
+        PaymentResponse response = given()
                 .contentType("application/json")
                 .header(new Header("Content-Type", "application/json"))
                 .when().get("/v1/payment/" + uuid)
                 .then()
                 .statusCode(200)
-                .body(containsString("\"code\":200,\""));
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 200);
+        PaymentStatePayload paymentStatePayload = mapper.convertValue(response.getPayload(), PaymentStatePayload.class);
+        assertEquals(paymentStatePayload.getType(), "created");
+    }
+
+    @Test
+    void fetchAllPaymentEndpoint() throws JsonProcessingException {
+        addMockPayment();
+        addMockPayment();
+        addMockPayment();
+        PaymentResponse response = given()
+                .contentType("application/json")
+                .header(new Header("Content-Type", "application/json"))
+                .when().get("/v1/payment/all")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PaymentResponse.class);
+        assertEquals(response.getCode(), 200);
+        List<PaymentStatePayload> paymentStatePayloadList = mapper.convertValue(response.getPayload(), new TypeReference<ArrayList<PaymentStatePayload>>() {
+        });
+        assertEquals(paymentStatePayloadList.size(), 3);
+        assertNotNull(paymentStatePayloadList.get(0).getPaymentInfo());
     }
 
     private String addMockPayment() throws JsonProcessingException {
@@ -127,8 +155,8 @@ class PaymentResourceTest {
                 event + "');";
     }
 
-    protected PaymentAdded getPaymentAddedEvent() {
-        return new PaymentAdded(UUID.randomUUID().toString(), "payment", 0, getPaymentInfoDTO());
+    PaymentAdded getPaymentAddedEvent() {
+        return new PaymentAdded(UUID.randomUUID().toString(), "created", 0, getPaymentInfoDTO());
     }
 
     PaymentInfoDTO getPaymentInfoDTO() {

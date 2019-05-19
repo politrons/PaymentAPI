@@ -87,6 +87,8 @@ In our application I invested around 70% of the time implementing the test frame
 * **Integration**: I used Quarkus server, which include a very nice Test framework to do BDD and run the application and test all layers of your application.
 Just to be clear, the IT test are just a proof that our Unit test are well designed and the Mock behaves as I expect. None IT test should ever fail. And if it does, 
 you have to reproduce it in Unit test.
+* **Performance**: Comming soon.
+* **Volume**: Comming soon.
 
 ## Technology Stack
 
